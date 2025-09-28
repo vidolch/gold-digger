@@ -1,0 +1,596 @@
+/* Gold Digger TUI Styles */
+
+/* Screen layout */
+Screen {
+    background: $surface;
+}
+
+/* Header and Footer */
+Header {
+    background: $primary;
+    color: $text;
+    text-style: bold;
+}
+
+Footer {
+    background: $primary-darken-2;
+    color: $text;
+}
+
+/* Main title */
+.main-title {
+    text-align: center;
+    text-style: bold;
+    background: blue;
+    color: white;
+    height: 3;
+    content-align: center middle;
+    margin: 1;
+    border: thick white;
+}
+
+.screen-title {
+    text-align: center;
+    text-style: bold;
+    background: $primary;
+    color: $text;
+    height: 3;
+    content-align: center middle;
+    margin: 0 0 1 0;
+}
+
+.section-title {
+    text-style: bold;
+    background: gray;
+    color: white;
+    height: 2;
+    content-align: left middle;
+    padding: 0 1;
+    margin: 1 0;
+    border: solid white;
+}
+
+/* Status panel */
+.status-container {
+    height: 6;
+    margin: 1 0;
+}
+
+.status-panel {
+    background: darkblue;
+    color: white;
+    border: thick white;
+    padding: 1;
+    height: 3;
+    text-style: bold;
+}
+
+/* Button sections */
+.actions-section, .modules-section {
+    height: auto;
+    min-height: 8;
+    margin: 1 0;
+}
+
+
+
+/* Button containers */
+.main-buttons {
+    height: auto;
+    min-height: 5;
+    margin: 1 0;
+    width: 100%;
+}
+
+.module-buttons {
+    height: auto;
+    min-height: 5;
+    margin: 1 0;
+    width: 100%;
+}
+
+/* Individual buttons */
+Button {
+    margin: 1;
+    min-width: 20;
+    height: 3;
+    text-style: bold;
+    border: thick white;
+    background: blue;
+    color: white;
+}
+
+Button:hover {
+    text-style: bold;
+    background: cyan;
+    color: black;
+}
+
+Button.-primary {
+    background: green;
+    color: white;
+    border: thick white;
+}
+
+Button.-primary:hover {
+    background: lime;
+    color: black;
+}
+
+Button.-success {
+    background: darkgreen;
+    color: white;
+    border: thick white;
+}
+
+Button.-warning {
+    background: orange;
+    color: black;
+    border: thick white;
+}
+
+Button.-default {
+    background: purple;
+    color: white;
+    border: thick white;
+}
+
+Button:focus {
+    border: thick yellow;
+    text-style: bold underline;
+}
+
+/* Trading Screen */
+.trading-screen {
+    padding: 0 1;
+}
+
+.trading-controls {
+    height: 6;
+    margin: 1 0;
+}
+
+.trading-buttons {
+    height: 5;
+}
+
+.trading-content {
+    height: auto;
+    min-height: 20;
+    border: solid $primary;
+    padding: 1;
+}
+
+/* News Screen */
+.news-screen {
+    padding: 0 1;
+}
+
+.news-controls {
+    height: 6;
+    margin: 1 0;
+}
+
+.news-buttons {
+    height: 5;
+}
+
+.news-content {
+    height: auto;
+    min-height: 20;
+    border: solid $primary;
+    padding: 1;
+}
+
+#headlines-container {
+    background: $surface-lighten-1;
+    padding: 1;
+    margin: 0 0 2 0;
+    min-height: 10;
+    border: solid $accent;
+}
+
+#sentiment-container {
+    background: $surface-lighten-1;
+    padding: 1;
+    min-height: 8;
+    border: solid $accent;
+}
+
+/* Database Screen */
+.database-screen {
+    padding: 0 1;
+}
+
+#data-tabs {
+    margin: 1 0;
+    height: auto;
+    min-height: 25;
+}
+
+TabPane {
+    padding: 1;
+    background: $surface-lighten-1;
+}
+
+/* Configuration Screen */
+.config-screen {
+    padding: 0 1;
+}
+
+.config-container {
+    height: auto;
+    min-height: 20;
+    margin: 1 0;
+    border: solid $primary;
+}
+
+.config-info {
+    background: $surface-lighten-1;
+    padding: 1;
+    text-style: none;
+}
+
+.button-row {
+    height: 5;
+    margin: 1 0;
+}
+
+.button-row Button {
+    margin: 0 1 0 0;
+}
+
+/* Status Dialog */
+.status-dialog {
+    background: $surface;
+    border: thick $primary;
+    width: 50;
+    height: 15;
+    margin: 10 0;
+    padding: 2;
+}
+
+.status-dialog .title {
+    text-align: center;
+    text-style: bold;
+    height: 3;
+    content-align: center middle;
+    background: $primary;
+    color: $text;
+    margin: 0 0 1 0;
+}
+
+.status-dialog .message {
+    text-align: center;
+    height: 3;
+    content-align: center middle;
+    margin: 0 0 2 0;
+}
+
+.status-dialog .progress {
+    margin: 1 0;
+}
+
+/* Scrollable containers */
+ScrollableContainer {
+    border: solid $primary;
+    background: $surface;
+}
+
+/* Input fields */
+Input {
+    margin: 0 1;
+    border: solid $primary;
+    background: $surface-lighten-1;
+}
+
+Input:focus {
+    border: solid $accent;
+}
+
+/* Text areas */
+TextArea {
+    border: solid $primary;
+    background: $surface-lighten-1;
+    margin: 1 0;
+}
+
+TextArea:focus {
+    border: solid $accent;
+}
+
+/* Tables */
+DataTable {
+    border: solid $primary;
+    background: $surface-lighten-1;
+}
+
+DataTable > .datatable--header {
+    background: $primary;
+    color: $text;
+    text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+    background: $accent;
+    color: $text;
+}
+
+/* Tree widgets */
+Tree {
+    border: solid $primary;
+    background: $surface-lighten-1;
+}
+
+TreeNode {
+    text-style: none;
+}
+
+TreeNode:hover {
+    background: $accent;
+}
+
+/* Progress bars */
+ProgressBar {
+    border: solid $primary;
+}
+
+ProgressBar > .bar--bar {
+    color: $success;
+}
+
+ProgressBar > .bar--complete {
+    color: $success-lighten-1;
+}
+
+/* Logs */
+Log {
+    border: solid $primary;
+    background: $surface-lighten-1;
+}
+
+/* Selection lists */
+SelectionList {
+    border: solid $primary;
+    background: $surface-lighten-1;
+}
+
+SelectionList > .selection-list--button {
+    text-style: none;
+}
+
+SelectionList > .selection-list--button:hover {
+    background: $accent;
+}
+
+SelectionList > .selection-list--button-selected {
+    background: $primary;
+    color: $text;
+}
+
+/* Container layouts */
+Container {
+    background: transparent;
+}
+
+Horizontal {
+    background: transparent;
+}
+
+Vertical {
+    background: transparent;
+}
+
+/* Static text elements */
+Static {
+    text-style: none;
+    background: transparent;
+}
+
+/* Horizontal containers for buttons */
+Horizontal {
+    height: 5;
+    margin: 1 0;
+    width: 100%;
+}
+
+Horizontal Button {
+    width: 1fr;
+    margin: 0 1;
+}
+
+/* Main screen specific styles */
+.main-screen {
+    height: 100%;
+    width: 100%;
+}
+
+/* Compact button styles for smaller screens */
+.compact-buttons Button {
+    min-width: 10;
+    height: 2;
+    margin: 0 0 1 0;
+}
+
+.compact-buttons .main-buttons {
+    height: auto;
+}
+
+.compact-buttons .module-buttons {
+    height: auto;
+}
+
+.compact-buttons .trading-buttons {
+    height: auto;
+}
+
+.compact-buttons .news-buttons {
+    height: auto;
+}
+
+/* Dark mode specific styles */
+App.-dark-mode {
+    background: $surface;
+    color: $text;
+}
+
+App.-dark-mode Screen {
+    background: $surface;
+}
+
+App.-dark-mode .status-panel {
+    background: $surface-lighten-2;
+    color: $text;
+}
+
+App.-dark-mode #headlines-container {
+    background: $surface-lighten-2;
+    color: $text;
+}
+
+App.-dark-mode #sentiment-container {
+    background: $surface-lighten-2;
+    color: $text;
+}
+
+App.-dark-mode .config-info {
+    background: $surface-lighten-2;
+    color: $text;
+}
+
+/* Light mode specific styles (default when -dark-mode class is not present) */
+Screen {
+    background: white;
+    color: black;
+}
+
+.status-panel {
+    background: #f0f0f0;
+    color: black;
+    border: solid #666666;
+}
+
+/* Light mode button override */
+Button {
+    background: #4a4a4a;
+    color: white;
+    border: solid #333333;
+}
+
+#headlines-container {
+    background: #f8f8f8;
+    color: black;
+    border: solid #666666;
+}
+
+#sentiment-container {
+    background: #f8f8f8;
+    color: black;
+    border: solid #666666;
+}
+
+.config-info {
+    background: #f5f5f5;
+    color: black;
+}
+
+/* Override light mode when dark mode class is present */
+App.-dark-mode Screen {
+    background: $surface;
+    color: $text;
+}
+
+App.-dark-mode .status-panel {
+    background: $surface-lighten-2;
+    color: $text;
+    border: solid $primary;
+}
+
+/* Dark mode button overrides */
+App.-dark-mode Button {
+    background: #2a2a2a;
+    color: white;
+    border: solid #555555;
+}
+
+App.-dark-mode Button.-primary {
+    background: green;
+    color: white;
+    border: solid white;
+}
+
+App.-dark-mode Button.-success {
+    background: darkgreen;
+    color: white;
+    border: solid white;
+}
+
+App.-dark-mode #headlines-container {
+    background: $surface-lighten-2;
+    color: $text;
+    border: solid $accent;
+}
+
+App.-dark-mode #sentiment-container {
+    background: $surface-lighten-2;
+    color: $text;
+    border: solid $accent;
+}
+
+App.-dark-mode .config-info {
+    background: $surface-lighten-2;
+    color: $text;
+}
+
+/* Animation effects */
+Button {
+    transition: background 200ms, color 200ms;
+}
+
+Static {
+    transition: background 150ms;
+}
+
+/* Focus indicators */
+*:focus {
+    border: solid $accent;
+    text-style: bold;
+}
+
+/* Loading states */
+.loading {
+    background: $warning;
+    text-style: italic;
+}
+
+.success {
+    background: $success;
+    color: $text;
+}
+
+.error {
+    background: $error;
+    color: $text;
+}
+
+.warning {
+    background: $warning;
+    color: $text;
+}
+
+/* Custom status indicators */
+.status-good {
+    color: $success;
+}
+
+.status-bad {
+    color: $error;
+}
+
+.status-warning {
+    color: $warning;
+}
+
+.status-info {
+    color: $primary;
+}

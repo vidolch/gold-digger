@@ -2,29 +2,47 @@
 
 A comprehensive Python system that fetches gold price data and news, caches them intelligently in SQLite, and provides AI-powered trading analysis using Ollama's gpt-oss:20b model for CFD trading recommendations.
 
-## 🚀 NEW: Unified Terminal Application
+## 🚀 NEW: Modern TUI Interface
 
-**The easiest way to use Gold Digger is now through the unified terminal interface:**
+**Experience Gold Digger through our beautiful, interactive Text User Interface (TUI):**
 
 ```bash
-# Quick start - run the unified terminal
+# Launch the modern TUI interface (recommended)
+./gold_digger.sh --tui
+
+# Or directly with Python
+python3 gold_digger_tui.py
+
+# Try demo mode with sample data
+python3 gold_digger_tui.py --demo
+```
+
+**🎨 TUI Features:**
+- 🖥️ Beautiful, responsive interface with real-time updates
+- 🎛️ Interactive panels, tabs, and navigation
+- 📊 Live data visualization and progress indicators
+- 🌓 Dark/Light mode toggle
+- ⌨️ Full keyboard shortcuts and mouse support
+- 📱 Responsive design for different terminal sizes
+
+**📟 Classic Terminal Interface:**
+
+```bash
+# Classic menu-based interface
 ./gold_digger.sh
 
 # Or directly with Python
 python3 gold_digger_terminal.py
-
-# Or use the simple launcher
-python3 gold_digger.py
 ```
 
-The unified terminal provides:
+**✨ Both interfaces provide:**
 - 📊 All price data fetching and analysis
 - 📰 Complete news management and sentiment analysis  
 - 🤖 AI trading recommendations
 - ⚙️ Configuration and setup tools
 - 📋 Data exploration and export features
 
-**No more running multiple scripts!** Everything is accessible through one interactive menu.
+**No more running multiple scripts!** Everything is accessible through beautiful, unified interfaces.
 
 ## Features
 
@@ -65,7 +83,56 @@ cd gold-digger
 
 # Run automated setup
 python3 configure.py --quick
+
+# Or use the modern TUI interface
+./gold_digger.sh --tui
 ```
+
+## 🎨 TUI Interface Guide
+
+### Launch Options
+```bash
+# Modern TUI (recommended)
+./gold_digger.sh --tui
+python3 gold_digger_tui.py
+
+# Demo mode with sample data
+python3 gold_digger_tui.py --demo
+
+# TUI with dependency auto-install
+python3 gold_digger_tui_launcher.py
+```
+
+### TUI Features
+- 🎛️ **Interactive Dashboard**: Real-time status and quick actions
+- 📊 **Trading Analysis Screen**: AI recommendations with live updates  
+- 📰 **News & Sentiment Screen**: Browse articles, sentiment analysis
+- 💾 **Database Screen**: Statistics and data exploration with tabs
+- ⚙️ **Configuration Screen**: View and edit system settings
+- 🌓 **Theme Support**: Dark/Light mode with beautiful styling
+
+### Keyboard Shortcuts
+```bash
+# Global shortcuts
+Q           - Quit application
+D           - Toggle dark/light mode
+H           - Show help information
+ESC         - Go back to previous screen
+Ctrl+R      - Refresh current screen
+
+# Context-specific shortcuts
+F           - Fetch data (news/prices)
+A           - Run analysis
+S           - Search/Save
+R           - Refresh data
+```
+
+### TUI Navigation
+- Use **TAB** and **Shift+TAB** to navigate between elements
+- **ENTER** to activate buttons and selections
+- **Arrow keys** for scrolling and selection
+- **Mouse support** for clicking and scrolling
+- **ESC** to go back or exit modals
 
 ### Manual Setup
 
@@ -101,9 +168,15 @@ python3 configure.py --test
 
 ### 🚀 Quick Start Commands
 
-**RECOMMENDED: Use the Unified Terminal**
+**RECOMMENDED: Use the Modern TUI Interface**
 ```bash
-# Start the unified terminal (easiest way)
+# Start the modern TUI interface (best experience)
+./gold_digger.sh --tui
+
+# Try demo mode with sample data
+python3 gold_digger_tui.py --demo
+
+# Classic terminal interface
 ./gold_digger.sh
 
 # Quick analysis without interactive menu
@@ -426,8 +499,13 @@ and positive news sentiment around Federal Reserve dovish signals.
 
 ```
 gold-digger/
-├── 🚀 UNIFIED TERMINAL (NEW!)
-│   ├── gold_digger_terminal.py      # Main unified terminal application
+├── 🎨 MODERN TUI INTERFACE (NEW!)
+│   ├── gold_digger_tui.py           # Beautiful modern TUI application
+│   ├── gold_digger_tui.tcss         # TUI styles and themes
+│   └── gold_digger_tui_launcher.py  # TUI launcher with dependency check
+│
+├── 📟 UNIFIED TERMINAL
+│   ├── gold_digger_terminal.py      # Classic terminal application
 │   ├── gold_digger.py               # Simple launcher script
 │   └── gold_digger.sh               # Shell wrapper for easy execution
 │

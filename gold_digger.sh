@@ -78,6 +78,10 @@ case "$1" in
         print_status "Running setup wizard..."
         python3 configure.py --quick
         ;;
+    --tui)
+        print_status "Starting Gold Digger TUI (modern interface)..."
+        python3 gold_digger_tui.py
+        ;;
     --help|-h)
         echo "Gold Digger Terminal Launcher"
         echo ""
@@ -88,12 +92,14 @@ case "$1" in
         echo "  --config    Show configuration"
         echo "  --quick     Run quick analysis"
         echo "  --setup     Run setup wizard"
+        echo "  --tui       Launch modern TUI interface"
         echo "  --help      Show this help"
         echo ""
         echo "Run without arguments to start interactive terminal"
         ;;
     *)
         print_status "Starting Gold Digger Terminal..."
+        print_status "💡 Try --tui for the modern interface!"
         python3 gold_digger_terminal.py
         ;;
 esac
