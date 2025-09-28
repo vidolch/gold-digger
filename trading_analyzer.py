@@ -374,6 +374,49 @@ class TradingAnalyzer:
             logger.error(f"Error getting recommendation history: {e}")
             return pd.DataFrame()
 
+    def get_latest_recommendation(self) -> Dict[str, Any]:
+        """Get the latest AI recommendation with full details."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+
+                query = '''
+                    SELECT timestamp, interval_used, hours_analyzed, current_price,
+                           recommendation, market_data_points, success, error_message
+                    FROM trading_recommendations
+                    WHERE success = 1 AND recommendation IS NOT NULL
+                    ORDER BY timestamp DESC
+                    LIMIT 1
+                '''
+
+                cursor.execute(query)
+                row = cursor.fetchone()
+
+                if row:
+                    return {
+                        'timestamp': row[0],
+                        'interval_used': row[1],
+                        'hours_analyzed': row[2],
+                        'current_price': row[3],
+                        'recommendation': row[4],
+                        'market_data_points': row[5],
+                        'success': bool(row[6]),
+                        'error_message': row[7],
+                        'has_cached_analysis': True
+                    }
+                else:
+                    return {
+                        'has_cached_analysis': False,
+                        'message': 'No cached AI analysis available'
+                    }
+
+        except sqlite3.Error as e:
+            logger.error(f"Error getting latest recommendation: {e}")
+            return {
+                'has_cached_analysis': False,
+                'error': str(e)
+            }
+
 
 def main():
     """Main function to run trading analysis."""

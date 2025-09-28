@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Gold Digger - Trading Terminal</title>
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='css/style.css') }}"
+        />
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        />
+    </head>
+    <body>
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <h1 class="logo">
+                        <i class="fas fa-coins"></i>
+                        Gold Digger
+                    </h1>
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Current Price</span>
+                            <span id="current-price" class="stat-value"
+                                >Loading...</span
+                            >
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">24h Change</span>
+                            <span id="price-change" class="stat-value"
+                                >Loading...</span
+                            >
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Status</span>
+                            <span
+                                id="system-status"
+                                class="stat-value status-indicator"
+                            >
+                                <i class="fas fa-circle"></i> Checking...
+                            </span>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button id="refresh-all" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Refresh All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Navigation Tabs -->
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </button>
+                    <button class="tab-button" data-tab="prices">
+                        <i class="fas fa-coins"></i> Prices
+                    </button>
+                    <button class="tab-button" data-tab="news">
+                        <i class="fas fa-newspaper"></i> News
+                    </button>
+                    <button class="tab-button" data-tab="analysis">
+                        <i class="fas fa-brain"></i> Analysis
+                    </button>
+                </div>
+
+                <!-- Dashboard Tab -->
+                <div id="dashboard-tab" class="tab-content active">
+                    <div class="dashboard-grid">
+                        <!-- Price Chart Card -->
+                        <div class="card large-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-chart-candlestick"></i>
+                                    Gold Price Chart
+                                </h3>
+                                <div class="chart-controls">
+                                    <select
+                                        id="chart-interval"
+                                        class="select-input"
+                                    >
+                                        <option value="15m">15 Minutes</option>
+                                        <option value="30m">30 Minutes</option>
+                                        <option value="1h">1 Hour</option>
+                                        <option value="1d">1 Day</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div id="price-chart" class="chart-container">
+                                    Loading chart...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Summary Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-robot"></i> AI Market
+                                    Summary
+                                </h3>
+                                <button id="refresh-ai" class="btn btn-sm">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="ai-summary" class="ai-summary">
+                                    <div class="loading">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        Checking for cached AI analysis...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sentiment Analysis Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-heart-pulse"></i> Market
+                                    Sentiment
+                                </h3>
+                                <button
+                                    id="refresh-sentiment"
+                                    class="btn btn-sm"
+                                >
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div
+                                    id="sentiment-display"
+                                    class="sentiment-display"
+                                >
+                                    <div class="sentiment-gauge">
+                                        <div
+                                            id="sentiment-meter"
+                                            class="sentiment-meter"
+                                        >
+                                            <div class="sentiment-needle"></div>
+                                        </div>
+                                        <div
+                                            id="sentiment-label"
+                                            class="sentiment-label"
+                                        >
+                                            Loading...
+                                        </div>
+                                    </div>
+                                    <div
+                                        id="sentiment-stats"
+                                        class="sentiment-stats"
+                                    >
+                                        <div class="sentiment-stat">
+                                            <span class="stat-name"
+                                                >Positive</span
+                                            >
+                                            <span
+                                                id="positive-count"
+                                                class="stat-count"
+                                                >-</span
+                                            >
+                                        </div>
+                                        <div class="sentiment-stat">
+                                            <span class="stat-name"
+                                                >Neutral</span
+                                            >
+                                            <span
+                                                id="neutral-count"
+                                                class="stat-count"
+                                                >-</span
+                                            >
+                                        </div>
+                                        <div class="sentiment-stat">
+                                            <span class="stat-name"
+                                                >Negative</span
+                                            >
+                                            <span
+                                                id="negative-count"
+                                                class="stat-count"
+                                                >-</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent News Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-newspaper"></i> Recent
+                                    Headlines
+                                </h3>
+                                <button id="fetch-news" class="btn btn-sm">
+                                    <i class="fas fa-download"></i> Fetch New
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="recent-headlines" class="news-list">
+                                    Loading headlines...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prices Tab -->
+                <div id="prices-tab" class="tab-content">
+                    <div class="prices-container">
+                        <!-- Price Controls -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-sliders-h"></i> Price Data
+                                    Controls
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="controls-grid">
+                                    <div class="control-group">
+                                        <label for="price-interval"
+                                            >Interval:</label
+                                        >
+                                        <select
+                                            id="price-interval"
+                                            class="select-input"
+                                        >
+                                            <option value="15m">
+                                                15 Minutes
+                                            </option>
+                                            <option value="30m">
+                                                30 Minutes
+                                            </option>
+                                            <option value="1h">1 Hour</option>
+                                            <option value="1d">1 Day</option>
+                                        </select>
+                                    </div>
+                                    <div class="control-group">
+                                        <button
+                                            id="fetch-prices"
+                                            class="btn btn-primary"
+                                        >
+                                            <i class="fas fa-download"></i>
+                                            Fetch Prices
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price Table -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-table"></i> Price Data</h3>
+                            </div>
+                            <div class="card-body">
+                                <div
+                                    id="price-table-container"
+                                    class="table-container"
+                                >
+                                    <table id="price-table" class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date/Time</th>
+                                                <th>Open</th>
+                                                <th>High</th>
+                                                <th>Low</th>
+                                                <th>Close</th>
+                                                <th>Volume</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td
+                                                    colspan="6"
+                                                    class="loading-cell"
+                                                >
+                                                    Loading price data...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Tab -->
+                <div id="news-tab" class="tab-content">
+                    <div class="news-container">
+                        <!-- News Controls -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-filter"></i> News Filters
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="controls-grid">
+                                    <div class="control-group">
+                                        <label for="news-limit"
+                                            >Articles:</label
+                                        >
+                                        <select
+                                            id="news-limit"
+                                            class="select-input"
+                                        >
+                                            <option value="10">10</option>
+                                            <option value="20" selected>
+                                                20
+                                            </option>
+                                            <option value="50">50</option>
+                                        </select>
+                                    </div>
+                                    <div class="control-group">
+                                        <label for="news-category"
+                                            >Category:</label
+                                        >
+                                        <select
+                                            id="news-category"
+                                            class="select-input"
+                                        >
+                                            <option value="">
+                                                All Categories
+                                            </option>
+                                            <option value="market">
+                                                Market
+                                            </option>
+                                            <option value="economic">
+                                                Economic
+                                            </option>
+                                            <option value="political">
+                                                Political
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="control-group">
+                                        <button
+                                            id="load-news"
+                                            class="btn btn-primary"
+                                        >
+                                            <i class="fas fa-search"></i> Load
+                                            News
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- News Articles -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-list"></i> News Articles
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div id="news-articles" class="news-articles">
+                                    Loading news articles...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Tab -->
+                <div id="analysis-tab" class="tab-content">
+                    <div class="analysis-container">
+                        <!-- Analysis Controls -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-cogs"></i> Analysis Tools
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="analysis-buttons">
+                                    <button
+                                        id="run-complete-analysis"
+                                        class="btn btn-primary"
+                                    >
+                                        <i class="fas fa-play"></i> Complete
+                                        Analysis
+                                    </button>
+                                    <button
+                                        id="analyze-sentiment"
+                                        class="btn btn-secondary"
+                                    >
+                                        <i class="fas fa-heart-pulse"></i>
+                                        Sentiment Analysis
+                                    </button>
+                                    <button
+                                        id="trading-analysis"
+                                        class="btn btn-secondary"
+                                    >
+                                        <i class="fas fa-chart-line"></i>
+                                        Trading Analysis
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Results -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-chart-bar"></i> Analysis
+                                    Results
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div
+                                    id="analysis-results"
+                                    class="analysis-results"
+                                >
+                                    <div class="placeholder-text">
+                                        <i class="fas fa-info-circle"></i>
+                                        Run an analysis to see results here
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <div class="loading-text">Processing...</div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- Scripts -->
+        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    </body>
+</html>

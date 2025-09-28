@@ -88,6 +88,58 @@ python3 configure.py --quick
 ./gold_digger.sh --tui
 ```
 
+## 🌐 Web Interface Guide
+
+The web interface is the easiest way to use Gold Digger. It provides a modern, intuitive dashboard accessible from any web browser.
+
+### Launch Options
+
+```bash
+# Default launch (localhost:5000)
+./gold_digger_web.sh
+
+# Custom port
+./gold_digger_web.sh --port 8080
+
+# Custom host (for network access)
+./gold_digger_web.sh --host 0.0.0.0 --port 5000
+
+# Debug mode (development)
+./gold_digger_web.sh --debug
+
+# Production mode (with Gunicorn)
+./gold_digger_web.sh --production
+
+# Setup environment only
+./gold_digger_web.sh --setup-only
+
+# Help
+./gold_digger_web.sh --help
+```
+
+### Web Interface Features
+
+- **Dashboard**: Overview with price charts, sentiment analysis, and recent news
+- **Price Data**: Interactive charts with multiple timeframes (15m, 30m, 1h, 1d)
+- **News Feed**: Real-time news with filtering and sentiment scoring
+- **Analysis Tools**: Complete market analysis, sentiment analysis, and trading signals
+- **Auto-refresh**: Real-time updates every 5 minutes
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+
+### Accessing the Dashboard
+
+1. Start the web server using one of the launch commands above
+2. Open your browser and go to `http://localhost:5000` (or your custom host/port)
+3. The dashboard will load with live data and charts
+4. Navigate between tabs to access different features
+
+### Web Interface Tabs
+
+- **Dashboard**: Overview with key metrics and charts
+- **Prices**: Detailed price data with interactive charts and tables
+- **News**: News articles with filtering and sentiment analysis
+- **Analysis**: AI-powered analysis tools and trading insights
+
 ## 🎨 TUI Interface Guide
 
 ### Launch Options
@@ -353,6 +405,34 @@ python3 configure.py --test
 
 # Reset configuration
 python3 configure.py --reset
+```
+
+## Web Interface Configuration
+
+The web interface uses the same configuration as the terminal version but adds web-specific options:
+
+### Web Server Settings
+
+```bash
+# .env file additions for web interface
+PORT=5000                    # Web server port
+HOST=localhost              # Web server host
+FLASK_ENV=development       # Flask environment (development/production)
+```
+
+### Production Deployment
+
+For production deployment, use:
+
+```bash
+# Launch in production mode
+./gold_digger_web.sh --production --host 0.0.0.0 --port 5000
+
+# Or with environment variables
+export FLASK_ENV=production
+export HOST=0.0.0.0
+export PORT=5000
+python3 gold_digger_web.py --production
 ```
 
 ## Configuration (.env)
