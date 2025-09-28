@@ -2,6 +2,30 @@
 
 A comprehensive Python system that fetches gold price data and news, caches them intelligently in SQLite, and provides AI-powered trading analysis using Ollama's gpt-oss:20b model for CFD trading recommendations.
 
+## 🚀 NEW: Unified Terminal Application
+
+**The easiest way to use Gold Digger is now through the unified terminal interface:**
+
+```bash
+# Quick start - run the unified terminal
+./gold_digger.sh
+
+# Or directly with Python
+python3 gold_digger_terminal.py
+
+# Or use the simple launcher
+python3 gold_digger.py
+```
+
+The unified terminal provides:
+- 📊 All price data fetching and analysis
+- 📰 Complete news management and sentiment analysis  
+- 🤖 AI trading recommendations
+- ⚙️ Configuration and setup tools
+- 📋 Data exploration and export features
+
+**No more running multiple scripts!** Everything is accessible through one interactive menu.
+
 ## Features
 
 ### 📊 Data Fetching & Caching
@@ -77,6 +101,22 @@ python3 configure.py --test
 
 ### 🚀 Quick Start Commands
 
+**RECOMMENDED: Use the Unified Terminal**
+```bash
+# Start the unified terminal (easiest way)
+./gold_digger.sh
+
+# Quick analysis without interactive menu
+./gold_digger.sh --quick
+
+# Test your setup
+./gold_digger.sh --test
+
+# Show configuration
+./gold_digger.sh --config
+```
+
+**Alternative: Individual Scripts (Legacy)**
 ```bash
 # Activate virtual environment (if using one)
 source venv/bin/activate
@@ -386,6 +426,11 @@ and positive news sentiment around Federal Reserve dovish signals.
 
 ```
 gold-digger/
+├── 🚀 UNIFIED TERMINAL (NEW!)
+│   ├── gold_digger_terminal.py      # Main unified terminal application
+│   ├── gold_digger.py               # Simple launcher script
+│   └── gold_digger.sh               # Shell wrapper for easy execution
+│
 ├── 📊 CORE SYSTEM
 │   ├── gold_fetcher.py              # Price data fetching & caching
 │   ├── trading_analyzer.py          # AI-powered trading analysis
