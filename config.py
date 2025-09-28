@@ -7,7 +7,7 @@ Loads settings from environment variables with sensible defaults.
 import os
 import logging
 from pathlib import Path
-from typing import Union, Optional
+from typing import Union, Optional, List
 from dotenv import load_dotenv
 
 # Load environment variables from .env file if it exists
@@ -85,6 +85,41 @@ class Config:
     def yfinance_timeout(self) -> int:
         """Yahoo Finance request timeout in seconds."""
         return int(os.getenv('YFINANCE_TIMEOUT', '30'))
+
+    # ==========================================================================
+    # NEWS FETCHING CONFIGURATION
+    # ==========================================================================
+
+    @property
+    def max_articles_per_symbol(self) -> int:
+        """Maximum articles to fetch per symbol."""
+        return int(os.getenv('MAX_ARTICLES_PER_SYMBOL', '30'))
+
+    @property
+    def news_symbols(self) -> List[str]:
+        """News symbols to track."""
+        symbols_str = os.getenv('NEWS_SYMBOLS', 'GC=F,GOLD,GLD,IAU')
+        return [symbol.strip() for symbol in symbols_str.split(',')]
+
+    @property
+    def default_news_days(self) -> int:
+        """Default news cache days."""
+        return int(os.getenv('DEFAULT_NEWS_DAYS', '7'))
+
+    @property
+    def enable_sentiment_analysis(self) -> bool:
+        """Enable news sentiment analysis."""
+        return os.getenv('ENABLE_SENTIMENT_ANALYSIS', 'true').lower() == 'true'
+
+    @property
+    def auto_categorize_news(self) -> bool:
+        """Auto-categorize news articles."""
+        return os.getenv('AUTO_CATEGORIZE_NEWS', 'true').lower() == 'true'
+
+    @property
+    def news_fetch_interval(self) -> int:
+        """News fetch interval in hours."""
+        return int(os.getenv('NEWS_FETCH_INTERVAL', '6'))
 
     # ==========================================================================
     # LOGGING CONFIGURATION
@@ -170,6 +205,11 @@ class Config:
     def use_mock_data(self) -> bool:
         """Use mock data instead of real API calls."""
         return os.getenv('USE_MOCK_DATA', 'false').lower() == 'true'
+
+    @property
+    def use_mock_news(self) -> bool:
+        """Use mock news data for testing."""
+        return os.getenv('USE_MOCK_NEWS', 'false').lower() == 'true'
 
     # ==========================================================================
     # HELPER METHODS

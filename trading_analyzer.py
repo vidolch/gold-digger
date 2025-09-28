@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Trading Analyzer with Ollama Integration
-Analyzes gold price data and provides CFD trading recommendations using Ollama's gpt-oss:20b model.
+Analyzes gold price data and news sentiment to provide CFD trading recommendations using Ollama's gpt-oss:20b model.
 """
 
 import sqlite3
@@ -21,13 +21,26 @@ logger = logging.getLogger(__name__)
 
 class TradingAnalyzer:
     def __init__(self, db_path: Optional[str] = None, prompt_file: Optional[str] = None,
-                 ollama_host: Optional[str] = None):
+                 ollama_host: Optional[str] = None, include_news: bool = True):
         """Initialize the trading analyzer with database and prompt file paths."""
         self.db_path = db_path or config.database_path
         self.prompt_file = prompt_file or config.prompt_file
         self.model = config.ollama_model
         self.ollama_host = ollama_host or config.ollama_host
         self.ollama_client = ollama.Client(host=self.ollama_host)
+        self.include_news = include_news
+
+        # Initialize news analyzer if requested
+        if self.include_news:
+            try:
+                from news_analyzer import GoldNewsAnalyzer
+                self.news_analyzer = GoldNewsAnalyzer(self.db_path)
+            except ImportError as e:
+                logger.warning(f"News analysis not available: {e}")
+                self.include_news = False
+                self.news_analyzer = None
+        else:
+            self.news_analyzer = None
 
         # Check if Ollama is available (unless skip is enabled)
         if not config.skip_model_check:
@@ -206,7 +219,23 @@ class TradingAnalyzer:
 
             # Format market data for prompt
             formatted_data = self.format_market_data(market_data)
-            full_prompt = prompt_template.format(market_data=formatted_data)
+
+            # Include news analysis if available
+            news_analysis = ""
+            if self.include_news and self.news_analyzer:
+                try:
+                    news_analysis = self.news_analyzer.format_news_for_prompt(hours)
+                    logger.info("News analysis included in trading recommendation")
+                except Exception as e:
+                    logger.warning(f"Failed to include news analysis: {e}")
+                    news_analysis = ""
+
+            # Combine market data and news analysis
+            combined_data = formatted_data
+            if news_analysis:
+                combined_data += f"\n\n{news_analysis}"
+
+            full_prompt = prompt_template.format(market_data=combined_data)
 
             logger.info("Sending request to Ollama...")
 
@@ -234,7 +263,8 @@ class TradingAnalyzer:
                 "analysis_period": f"{hours} hours",
                 "interval": interval,
                 "timestamp": datetime.now().isoformat(),
-                "current_price": market_data.iloc[0]['close'] if not market_data.empty else None
+                "current_price": market_data.iloc[0]['close'] if not market_data.empty else None,
+                "news_analysis_included": self.include_news and bool(news_analysis)
             }
 
         except Exception as e:
@@ -305,6 +335,12 @@ class TradingAnalyzer:
         print(f"📋 Data Points Analyzed: {recommendation_data.get('market_data_points', 0)}")
         print(f"🔄 Interval: {recommendation_data.get('interval', 'N/A')}")
 
+        # Show news analysis status
+        news_included = recommendation_data.get('news_analysis_included', False)
+        news_icon = "📰" if news_included else "📊"
+        news_status = "News + Price Analysis" if news_included else "Price Analysis Only"
+        print(f"{news_icon} Analysis Type: {news_status}")
+
         print("\n" + "-" * 80)
         print("🤖 AI TRADING RECOMMENDATION:")
         print("-" * 80)
@@ -350,6 +386,10 @@ def main():
                        help=f'Price data interval (default: {config.default_interval})')
     parser.add_argument('--hours', type=int,
                        help=f'Hours of data to analyze (default: {config.default_analysis_hours})')
+    parser.add_argument('--no-news', action='store_true',
+                       help='Exclude news analysis from recommendation')
+    parser.add_argument('--fetch-news', action='store_true',
+                       help='Fetch latest news before analysis')
 
     args = parser.parse_args()
 
@@ -357,7 +397,21 @@ def main():
         config.print_config_summary()
         return
 
-    analyzer = TradingAnalyzer()
+    # Fetch news if requested
+    if args.fetch_news:
+        try:
+            from news_fetcher import GoldNewsFetcher
+            logger.info("Fetching latest gold news...")
+            news_fetcher = GoldNewsFetcher()
+            results = news_fetcher.fetch_and_cache_gold_news()
+            total_new = sum(results.values())
+            logger.info(f"Fetched {total_new} new articles")
+        except ImportError as e:
+            logger.warning(f"News fetching not available: {e}")
+        except Exception as e:
+            logger.error(f"Error fetching news: {e}")
+
+    analyzer = TradingAnalyzer(include_news=not args.no_news)
 
     try:
         # Get trading recommendation

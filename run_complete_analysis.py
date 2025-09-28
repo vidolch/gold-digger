@@ -15,6 +15,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from gold_fetcher import GoldPriceFetcher
 from trading_analyzer import TradingAnalyzer
+from news_fetcher import GoldNewsFetcher
+from news_analyzer import GoldNewsAnalyzer
 from config import get_config
 
 # Get configuration
@@ -109,12 +111,73 @@ def run_data_analysis():
         return False
 
 
-def run_trading_analysis():
-    """Run AI-powered trading analysis."""
-    print_section("AI TRADING ANALYSIS")
+def run_news_fetching():
+    """Run news fetching and caching."""
+    print_section("GOLD NEWS FETCHING")
 
     try:
-        analyzer = TradingAnalyzer()
+        news_fetcher = GoldNewsFetcher()
+        results = news_fetcher.fetch_and_cache_gold_news()
+
+        total_new = sum(results.values())
+        print(f"📰 News fetch results:")
+        for symbol, count in results.items():
+            print(f"   • {symbol}: {count} new articles")
+        print(f"📊 Total new articles: {total_new}")
+
+        # Display news summary
+        news_fetcher.display_news_summary()
+
+        return True
+    except Exception as e:
+        logger.error(f"Error in news fetching: {e}")
+        return False
+
+
+def run_news_analysis():
+    """Run comprehensive news analysis."""
+    print_section("NEWS SENTIMENT ANALYSIS")
+
+    try:
+        news_analyzer = GoldNewsAnalyzer()
+
+        # Generate and display trading-focused news summary
+        summary = news_analyzer.generate_news_summary_for_trading(days=3)
+
+        if 'error' not in summary:
+            print(f"📊 Overall Assessment: {summary['overall_assessment'].upper()}")
+            print(f"📈 Current Sentiment: {summary['overall_sentiment']:.3f}")
+            print(f"📰 News Volume: {summary['news_volume']} articles")
+
+            if summary['key_factors']:
+                print(f"\n🔑 Key Market Factors:")
+                for factor in summary['key_factors']:
+                    print(f"   • {factor['category']}: {factor['sentiment']:.2f} sentiment ({factor['impact']} impact)")
+
+            if summary['market_signals']:
+                print(f"\n🚨 Market Signals:")
+                for signal in summary['market_signals']:
+                    print(f"   • {signal}")
+
+            if summary['risk_factors']:
+                print(f"\n⚠️ Risk Factors:")
+                for risk in summary['risk_factors']:
+                    print(f"   • {risk}")
+        else:
+            print("❌ Insufficient news data for analysis")
+
+        return True
+    except Exception as e:
+        logger.error(f"Error in news analysis: {e}")
+        return False
+
+
+def run_trading_analysis():
+    """Run AI-powered trading analysis with news integration."""
+    print_section("AI TRADING ANALYSIS (Price + News)")
+
+    try:
+        analyzer = TradingAnalyzer(include_news=True)
 
         # Get recommendation for different time periods
         intervals = [config.default_interval, "30m"]
@@ -122,7 +185,7 @@ def run_trading_analysis():
 
         for interval in intervals:
             for hour_period in hours:
-                print(f"\n🔍 Analysis: {interval} interval, last {hour_period} hours")
+                print(f"\n🔍 Analysis: {interval} interval, last {hour_period} hours (with news)")
 
                 recommendation = analyzer.get_trading_recommendation(
                     interval=interval,
@@ -130,7 +193,9 @@ def run_trading_analysis():
                 )
 
                 if recommendation.get('success'):
-                    print(f"✅ Analysis completed successfully")
+                    news_included = recommendation.get('news_analysis_included', False)
+                    analysis_type = "📰 Price + News" if news_included else "📊 Price Only"
+                    print(f"✅ Analysis completed successfully ({analysis_type})")
                     # Save the recommendation
                     analyzer.save_recommendation(recommendation)
                 else:
@@ -193,14 +258,20 @@ def main():
                        help=f'Number of days to fetch (default: {config.default_fetch_days})')
     parser.add_argument('--skip-fetch', action='store_true',
                        help='Skip price fetching')
+    parser.add_argument('--skip-news-fetch', action='store_true',
+                       help='Skip news fetching')
     parser.add_argument('--skip-analysis', action='store_true',
                        help='Skip data analysis')
+    parser.add_argument('--skip-news-analysis', action='store_true',
+                       help='Skip news analysis')
     parser.add_argument('--skip-trading', action='store_true',
                        help='Skip AI trading analysis')
     parser.add_argument('--skip-export', action='store_true',
                        help='Skip data export')
     parser.add_argument('--quick', '-q', action='store_true',
                        help='Run quick analysis (fetch + AI trading only)')
+    parser.add_argument('--news-only', action='store_true',
+                       help='Run only news-related analysis')
     parser.add_argument('--config-summary', action='store_true',
                        help='Show configuration summary and exit')
 
@@ -223,35 +294,68 @@ def main():
     success_count = 0
     total_steps = 0
 
-    # Step 1: Price Fetching
-    if not args.skip_fetch and not args.quick:
-        total_steps += 1
-        if run_price_fetching(args.days):
-            success_count += 1
-    elif args.quick:
-        total_steps += 1
-        if run_price_fetching(args.days):
-            success_count += 1
+    # Handle news-only mode
+    if args.news_only:
+        print_header("📰 NEWS-ONLY ANALYSIS MODE")
 
-    # Step 2: Basic Data Analysis
-    if not args.skip_analysis and not args.quick:
-        total_steps += 1
-        if run_data_analysis():
-            success_count += 1
+        # News fetching
+        if not args.skip_news_fetch:
+            total_steps += 1
+            if run_news_fetching():
+                success_count += 1
 
-    # Step 3: AI Trading Analysis
-    if not args.skip_trading and ollama_ready:
-        total_steps += 1
-        if run_trading_analysis():
-            success_count += 1
-    elif not args.skip_trading:
-        logger.warning("⚠️  Skipping AI trading analysis - Ollama not ready")
+        # News analysis
+        if not args.skip_news_analysis:
+            total_steps += 1
+            if run_news_analysis():
+                success_count += 1
 
-    # Step 4: Data Export
-    if not args.skip_export and not args.quick:
-        total_steps += 1
-        if export_data():
-            success_count += 1
+    else:
+        # Step 1: Price Fetching
+        if not args.skip_fetch and not args.quick:
+            total_steps += 1
+            if run_price_fetching(args.days):
+                success_count += 1
+        elif args.quick:
+            total_steps += 1
+            if run_price_fetching(args.days):
+                success_count += 1
+
+        # Step 2: News Fetching
+        if not args.skip_news_fetch and not args.quick:
+            total_steps += 1
+            if run_news_fetching():
+                success_count += 1
+        elif args.quick:
+            total_steps += 1
+            if run_news_fetching():
+                success_count += 1
+
+        # Step 3: Basic Data Analysis
+        if not args.skip_analysis and not args.quick:
+            total_steps += 1
+            if run_data_analysis():
+                success_count += 1
+
+        # Step 4: News Analysis
+        if not args.skip_news_analysis and not args.quick:
+            total_steps += 1
+            if run_news_analysis():
+                success_count += 1
+
+        # Step 5: AI Trading Analysis
+        if not args.skip_trading and ollama_ready:
+            total_steps += 1
+            if run_trading_analysis():
+                success_count += 1
+        elif not args.skip_trading:
+            logger.warning("⚠️  Skipping AI trading analysis - Ollama not ready")
+
+        # Step 6: Data Export
+        if not args.skip_export and not args.quick:
+            total_steps += 1
+            if export_data():
+                success_count += 1
 
     # Final Summary
     print_header("📊 EXECUTION SUMMARY")
@@ -260,11 +364,13 @@ def main():
 
     if success_count == total_steps:
         print("🎉 All analysis completed successfully!")
-        print("\n💡 Next steps:")
+        print("💡 Next steps:")
         print("  • Review the AI trading recommendations above")
         print("  • Check exported CSV files for detailed data")
+        print("  • Monitor news sentiment for market-moving events")
         print("  • Consider your risk tolerance before making any trades")
         print("  • Run this script regularly to get updated analysis")
+        print("  • Use --news-only for quick news sentiment updates")
     else:
         print(f"⚠️  {total_steps - success_count} step(s) failed. Check the logs above.")
 

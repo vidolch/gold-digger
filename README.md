@@ -1,413 +1,588 @@
-# Gold Digger 📈💰
+# Gold Digger 📈💰📰
 
-A comprehensive Python system that fetches gold price data (GC=F) from Yahoo Finance, caches it intelligently in SQLite, and provides AI-powered trading analysis using Ollama's gpt-oss:20b model for CFD trading recommendations.
+A comprehensive Python system that fetches gold price data and news, caches them intelligently in SQLite, and provides AI-powered trading analysis using Ollama's gpt-oss:20b model for CFD trading recommendations.
 
 ## Features
 
-### Data Fetching & Caching
-- Fetches gold prices in both 15-minute and 30-minute intervals
-- Retrieves data for the last 14 days by default
-- Smart caching system using SQLite database
-- Automatically detects missing data ranges and only fetches what's needed
-- Prevents duplicate API calls for already cached data
-- Comprehensive logging and error handling
-- Data summary display
+### 📊 Data Fetching & Caching
+- **Smart Price Caching**: Fetches gold prices in 15m and 30m intervals with intelligent duplicate avoidance
+- **News Aggregation**: Collects news from multiple gold-related symbols (GC=F, GOLD, GLD, IAU)
+- **SQLite Storage**: Efficient local caching prevents redundant API calls
+- **Automatic Deduplication**: Content hashing prevents duplicate articles
+- **Rate Limiting**: Configurable delays to respect API limits
 
-### AI Trading Analysis 🤖
-- **Ollama Integration**: Uses gpt-oss:20b model for intelligent analysis
-- **CFD Trading Focus**: Specialized for Contract for Difference trading
-- **Customizable Prompts**: Trading analysis prompt stored in separate file for easy modification
-- **Multiple Timeframes**: Analyze 6h, 24h, 48h periods with different intervals
+### 🤖 AI Trading Analysis
+- **Ollama Integration**: Uses gpt-oss:20b model for intelligent market analysis
+- **Multi-Modal Analysis**: Combines price data with news sentiment for comprehensive insights
+- **CFD Trading Focus**: Specialized for Contract for Difference trading recommendations
 - **Risk Assessment**: Provides position recommendations with stop-loss and take-profit levels
-- **Historical Tracking**: Saves all recommendations to database for performance tracking
-- **Professional Output**: Structured trading recommendations with confidence levels
+- **Historical Tracking**: Saves all recommendations to database for performance analysis
+
+### 📰 News Intelligence System
+- **Sentiment Analysis**: Advanced sentiment scoring (-1.0 to +1.0) for market impact assessment
+- **Smart Categorization**: Auto-categorizes news (monetary_policy, market_movement, geopolitical, etc.)
+- **Keyword Extraction**: Identifies trending keywords and their market implications
+- **Publisher Analysis**: Tracks publisher sentiment bias and reliability
+- **Market Signal Detection**: Identifies news-driven trading opportunities
+
+### 🔧 Configuration & Customization
+- **Environment Variables**: Complete .env configuration system
+- **Customizable Prompts**: AI analysis prompts stored in editable files
+- **Multiple Export Formats**: CSV, HTML, and database exports
+- **Interactive Tools**: Command-line browsers and web interfaces
+- **Mock Data Support**: Testing capabilities with synthetic data
 
 ## Prerequisites
 
-### 1. Quick Setup (Recommended)
-Run the automated configurator:
+### Quick Setup (Recommended)
 ```bash
+# Clone the repository
+cd gold-digger
+
+# Run automated setup
 python3 configure.py --quick
 ```
 
-### 2. Manual Setup
+### Manual Setup
 
-#### Install Dependencies:
+#### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-#### Setup Configuration:
-1. Copy the example configuration:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Edit `.env` file with your preferences:
-   ```bash
-   nano .env
-   ```
-
-#### Install and Setup Ollama:
-1. Install Ollama from [https://ollama.ai](https://ollama.ai)
-2. Start Ollama service
-3. Pull the required model:
-   ```bash
-   ollama pull gpt-oss:20b
-   ```
-
-### 3. Verify Setup
+#### 2. Configure Environment
 ```bash
+# Copy configuration template
+cp .env.example .env
+
+# Edit with your preferences
+nano .env
+```
+
+#### 3. Install Ollama & Model
+```bash
+# Install Ollama from https://ollama.ai
+ollama serve
+
+# Install required model
+ollama pull gpt-oss:20b
+```
+
+#### 4. Verify Setup
+```bash
+python3 configure.py --test
+```
+
+## Usage Guide
+
+### 🚀 Quick Start Commands
+
+```bash
+# Activate virtual environment (if using one)
+source venv/bin/activate
+
+# Complete analysis workflow
 python3 run_complete_analysis.py --quick
-```
 
-## Usage
-
-### 1. Basic Price Fetching
-
-Fetch gold prices for the last 14 days:
-```bash
-python3 gold_fetcher.py
-```
-
-Fetch prices and get AI trading analysis:
-```bash
+# Just price analysis
 python3 gold_fetcher.py --analyze
+
+# News-only analysis
+python3 run_complete_analysis.py --news-only
 ```
 
-### 2. AI Trading Analysis Only
-
-Run only the trading analysis (skip fetching):
-```bash
-python3 trading_analyzer.py
-```
-
-### 3. Complete Analysis Suite
-
-Run comprehensive analysis with all features:
-```bash
-python3 run_complete_analysis.py
-```
-
-Quick analysis (fetch + AI only):
-```bash
-python3 run_complete_analysis.py --quick
-```
-
-### 4. Available Command Options
+### 📈 Price Data Commands
 
 ```bash
-# Gold fetcher options
-python3 gold_fetcher.py --days 7 --analyze
+# Fetch gold prices (creates database)
+python3 gold_fetcher.py
+
+# Fetch with custom parameters
+python3 gold_fetcher.py --days 30
+
+# Get trading analysis
+python3 gold_fetcher.py --analyze
+
+# Skip fetching, just analyze
 python3 gold_fetcher.py --skip-fetch --analyze
 
-# Complete analysis options
-python3 run_complete_analysis.py --days 7
-python3 run_complete_analysis.py --skip-trading
-python3 run_complete_analysis.py --skip-export
-
-# Configuration management
-python3 configure.py                    # Interactive setup
-python3 configure.py --quick           # Quick setup with defaults
-python3 gold_fetcher.py --config-summary  # Show current config
+# View configuration
+python3 gold_fetcher.py --config-summary
 ```
 
-## Configuration (.env file)
+### 📰 News Commands
 
-The system uses a `.env` file for all configuration options. Here are the key settings:
-
-### **Core Configuration**
 ```bash
-# Ollama Settings
+# Fetch latest news
+python3 news_fetcher.py --fetch
+
+# View news summary
+python3 news_fetcher.py --summary
+
+# Search news by keyword
+python3 news_fetcher.py --search "fed"
+python3 news_fetcher.py --search "inflation"
+
+# Recent headlines
+python3 news_fetcher.py --headlines 15
+
+# Filter by category
+python3 news_fetcher.py --headlines 20 --category monetary_policy
+```
+
+### 🔍 Advanced News Viewing
+
+```bash
+# Interactive news browser
+python3 news_viewer.py --interactive
+
+# Browse with details
+python3 news_viewer.py --browse --limit 10 --details
+
+# Database statistics
+python3 news_viewer.py --stats
+
+# Search with filters
+python3 news_viewer.py --search "central bank" --details
+
+# View specific article
+python3 news_viewer.py --article 42
+
+# Filter by sentiment
+python3 news_viewer.py --browse --min-sentiment 0.2
+```
+
+### 📊 News Analysis Commands
+
+```bash
+# Complete trading analysis
+python3 news_analyzer.py --trading-summary
+
+# Sentiment trend analysis
+python3 news_analyzer.py --sentiment --days 7
+
+# Category breakdown
+python3 news_analyzer.py --categories
+
+# Keyword analysis
+python3 news_analyzer.py --keywords --days 5
+
+# Publisher analysis
+python3 news_analyzer.py --publishers
+```
+
+### 🤖 AI Trading Analysis
+
+```bash
+# AI recommendation with news
+python3 trading_analyzer.py
+
+# Fetch news first, then analyze
+python3 trading_analyzer.py --fetch-news
+
+# Price analysis only (no news)
+python3 trading_analyzer.py --no-news
+
+# Custom parameters
+python3 trading_analyzer.py --interval 30m --hours 48
+
+# View configuration
+python3 trading_analyzer.py --config-summary
+```
+
+### 🏆 Complete Analysis Suite
+
+```bash
+# Full comprehensive analysis
+python3 run_complete_analysis.py
+
+# Quick mode (price + news + AI)
+python3 run_complete_analysis.py --quick
+
+# Custom time periods
+python3 run_complete_analysis.py --days 21
+
+# Skip specific components
+python3 run_complete_analysis.py --skip-news-fetch
+python3 run_complete_analysis.py --skip-trading
+
+# News-only mode
+python3 run_complete_analysis.py --news-only
+```
+
+### 📤 Export & Visualization
+
+```bash
+# Export news to HTML
+python3 export_news_html.py --days 7 --output report.html
+
+# Export data using query examples
+python3 query_example.py
+
+# Create price trend charts
+python3 query_example.py  # Uncomment plotting lines
+```
+
+### ⚙️ Configuration Management
+
+```bash
+# Interactive setup wizard
+python3 configure.py
+
+# Install dependencies only
+python3 configure.py --install-deps
+
+# Install Ollama model only
+python3 configure.py --install-model
+
+# Test current setup
+python3 configure.py --test
+
+# Reset configuration
+python3 configure.py --reset
+```
+
+## Configuration (.env)
+
+### Core Settings
+```bash
+# Ollama Configuration
 OLLAMA_HOST=http://localhost:11434    # Ollama server address
 OLLAMA_MODEL=gpt-oss:20b             # AI model to use
-OLLAMA_TIMEOUT=120                   # Request timeout in seconds
+OLLAMA_TIMEOUT=120                   # Request timeout
 
-# Database Settings
+# Database
 DATABASE_PATH=gold_prices.db         # SQLite database location
 
-# Analysis Settings
-DEFAULT_INTERVAL=15m                 # Price data interval (15m, 30m, etc.)
+# Analysis Defaults
+DEFAULT_INTERVAL=15m                 # Price data interval
 DEFAULT_ANALYSIS_HOURS=24           # Hours of data to analyze
-DEFAULT_FETCH_DAYS=14               # Days of historical data to fetch
+DEFAULT_FETCH_DAYS=14               # Days of historical data
+DEFAULT_NEWS_DAYS=7                 # Days of news to analyze
+
+# News Configuration
+NEWS_SYMBOLS=GC=F,GOLD,GLD,IAU      # Symbols to fetch news from
+MAX_ARTICLES_PER_SYMBOL=30          # Articles per symbol
+ENABLE_SENTIMENT_ANALYSIS=true      # Enable sentiment analysis
+AUTO_CATEGORIZE_NEWS=true           # Auto-categorize articles
 ```
 
-### **Advanced Configuration**
+### Advanced Settings
 ```bash
-# Logging
-LOG_LEVEL=INFO                      # DEBUG, INFO, WARNING, ERROR
-ENABLE_FILE_LOGGING=false          # Save logs to file
-LOG_FILE=gold_digger.log           # Log file location
+# API Configuration
+API_DELAY=1.0                       # Delay between API calls
+MAX_RETRIES=3                       # Retry failed calls
+YFINANCE_TIMEOUT=30                # Yahoo Finance timeout
 
-# Trading Settings
+# Risk Management
 DEFAULT_RISK_LEVEL=MEDIUM          # LOW, MEDIUM, HIGH
 DEFAULT_POSITION_SIZE=0.05         # Position size as % of portfolio
-PROMPT_FILE=trading_prompt.txt     # AI analysis prompt template
-
-# API Settings
-API_DELAY=1.0                      # Delay between API calls (seconds)
-MAX_RETRIES=3                      # Retry failed API calls
-YFINANCE_TIMEOUT=30               # Yahoo Finance timeout
 
 # Development
 DEBUG_MODE=false                   # Enable debug output
-USE_MOCK_DATA=false               # Use fake data for testing
+USE_MOCK_DATA=false               # Use synthetic data
+USE_MOCK_NEWS=false               # Use synthetic news
 ```
 
-### **Remote Ollama Setup**
-To use a remote Ollama instance, update your `.env` file:
+## Interactive Commands Reference
+
+### News Viewer Interactive Mode
 ```bash
-OLLAMA_HOST=http://your-server.com:11434
+python3 news_viewer.py --interactive
+
+# Commands within interactive mode:
+stats                    # Show database statistics
+browse [number]         # Browse recent headlines
+search <keyword>        # Search articles
+article <id>           # View specific article details
+quit                   # Exit interactive mode
 ```
 
-Or set environment variable:
-```bash
-export OLLAMA_HOST="http://192.168.1.100:11434"
+### Available Categories
+- `monetary_policy` - Federal Reserve, interest rates, central bank decisions
+- `market_movement` - Trading activity, price movements, market trends
+- `geopolitical` - International tensions, wars, political events
+- `economic_data` - GDP, employment, inflation data
+- `supply_demand` - Mining, production, commodity supply chains
+- `general` - Other gold-related news
+
+## Database Schema
+
+### Price Data Tables
+```sql
+-- 15-minute interval gold prices
+gold_prices_15m (datetime, open, high, low, close, volume, created_at)
+
+-- 30-minute interval gold prices
+gold_prices_30m (datetime, open, high, low, close, volume, created_at)
+
+-- AI trading recommendations
+trading_recommendations (timestamp, interval_used, current_price, recommendation, success)
 ```
 
-### Database Structure
+### News Data Tables
+```sql
+-- News articles with sentiment analysis
+gold_news (id, title, summary, link, publisher, published_date, symbol, 
+          sentiment_score, keywords, category, created_at)
 
-The system creates a SQLite database (`gold_prices.db`) with multiple tables:
-
-#### Price Data Tables:
-- `gold_prices_15m`: 15-minute interval data
-- `gold_prices_30m`: 30-minute interval data
-
-Each price table contains:
-- `datetime`: Timestamp of the data point
-- `open`: Opening price
-- `high`: Highest price
-- `low`: Lowest price
-- `close`: Closing price
-- `volume`: Trading volume
-- `created_at`: When the record was cached
-
-#### Trading Analysis Table:
-- `trading_recommendations`: AI-generated trading recommendations
-
-Contains:
-- `timestamp`: When analysis was performed
-- `interval_used`: Data interval for analysis (15m/30m)
-- `hours_analyzed`: Time period analyzed
-- `current_price`: Gold price at analysis time
-- `recommendation`: Full AI recommendation text
-- `market_data_points`: Number of data points analyzed
-- `success`: Whether analysis completed successfully
-
-### Example Output
-
-#### Basic Price Fetching:
-```
-2024-01-15 10:30:00 - INFO - Starting gold price fetch for last 14 days
-2024-01-15 10:30:00 - INFO - Date range: 2024-01-01 to 2024-01-15
-
---- Processing 15m interval ---
-2024-01-15 10:30:01 - INFO - Fetching 15m data from 2024-01-01 to 2024-01-15
-2024-01-15 10:30:05 - INFO - Fetched 1344 records for 15m interval
-2024-01-15 10:30:05 - INFO - Saved 1344 records to gold_prices_15m
-
---- Processing 30m interval ---
-2024-01-15 10:30:06 - INFO - All 30m data is already cached
-
-============================================================
-GOLD PRICE CACHE SUMMARY
-============================================================
-
-15M INTERVAL DATA:
-  Records: 1344
-  Date range: 2024-01-01 08:00:00 to 2024-01-15 16:30:00
-  Latest price: $2045.50
-
-30M INTERVAL DATA:
-  Records: 672
-  Date range: 2024-01-01 08:00:00 to 2024-01-15 16:30:00
-  Latest price: $2045.50
+-- News fetch history for monitoring
+news_fetch_history (symbol, fetch_date, articles_count, success, error_message)
 ```
 
-#### AI Trading Analysis Output:
+## Sample Outputs
+
+### AI Trading Recommendation
 ```
-================================================================================
 🏆 GOLD TRADING ANALYSIS & RECOMMENDATION
-================================================================================
-📊 Analysis Time: 2024-01-15T10:30:15.123456
-📈 Current Gold Price: $2045.50
-⏱️  Data Period: 24 hours
-📋 Data Points Analyzed: 96
-🔄 Interval: 15m
+📊 Analysis Time: 2025-09-28T10:30:15
+📈 Current Gold Price: $2,045.50
+📰 Analysis Type: News + Price Analysis
 
---------------------------------------------------------------------------------
 🤖 AI TRADING RECOMMENDATION:
---------------------------------------------------------------------------------
-
 **TRADING RECOMMENDATION:**
 - Position: LONG
-- Confidence Level: MEDIUM
-- Entry Price Target: $2043.00
-- Stop Loss: $2035.00
-- Take Profit: $2055.00
+- Confidence Level: HIGH
+- Entry Price Target: $2,043.00
+- Stop Loss: $2,035.00
+- Take Profit: $2,055.00
 
 **REASONING:**
-Gold shows bullish momentum with higher lows formation over the past 24 hours. 
-Breaking above $2045 resistance with increasing volume suggests continuation. 
-Technical indicators support upward movement in the short term.
+Gold shows strong bullish momentum supported by technical breakout 
+and positive news sentiment around Federal Reserve dovish signals.
 
 **KEY FACTORS:**
-- Strong support at $2040 level holding consistently
-- Volume increase on recent price advances
-- Dollar weakness providing tailwind for gold
+- Strong support at $2,040 level
+- Volume increase on advances
+- Fed uncertainty driving positive sentiment (0.35 score)
+- Geopolitical tensions supporting safe-haven demand
 
 **RISK ASSESSMENT:**
 - Risk Level: MEDIUM
 - Risk/Reward Ratio: 1:1.5
-- Moderate volatility expected due to upcoming economic data releases
+- News Risk Factor: Positive sentiment reduces downside risk
 ```
 
-## Customization
-
-### Price Fetching:
-- Change the number of days by modifying the `days` parameter
-- Use a different database path by changing the `db_path` parameter
-- Add different time intervals (yfinance supports: 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo)
-
-### AI Trading Analysis:
-- **Custom Prompts**: Edit `trading_prompt.txt` to modify the AI analysis approach
-- **Different Models**: Change the model in `trading_analyzer.py` (line 27):
-  ```python
-  self.model = "gpt-oss:20b"  # Change to any Ollama model
-  ```
-- **Analysis Parameters**: Modify time periods and intervals:
-  ```python
-  recommendation = analyzer.get_trading_recommendation(interval="30m", hours=48)
-  ```
-
-### Sample Prompt Customization:
-Edit `trading_prompt.txt` to focus on specific trading strategies:
+### News Analysis Summary
 ```
-You are a [SCALPING/SWING/POSITION] trading specialist...
-Focus on [TECHNICAL/FUNDAMENTAL] analysis...
-Consider [RISK_LEVEL] risk tolerance...
+📰 GOLD NEWS CACHE SUMMARY
+📊 Total Articles: 40
+📈 Average Sentiment: 0.191 (slightly positive)
+🗓️ Date Range: 2025-09-21 to 2025-09-28
+
+📂 Articles by Category:
+• Market Movement: 9
+• General: 5
+• Supply Demand: 3
+• Geopolitical: 2
+
+📺 Top Publishers:
+• Simply Wall St.: 7
+• MarketWatch: 6
+• Reuters: 3
 ```
-
-## Error Handling
-
-The script includes comprehensive error handling for:
-- Network connectivity issues
-- Invalid API responses
-- Database errors
-- Missing data scenarios
-
-## Dependencies
-
-### Core Dependencies:
-- `yfinance>=0.2.25`: Fetching financial data from Yahoo Finance
-- `pandas>=2.0.0`: Data manipulation and analysis
-- `sqlite3`: Database operations (built into Python)
-- `ollama>=0.1.7`: AI model integration
-- `matplotlib>=3.5.0`: Optional plotting functionality
-
-### System Requirements:
-- **Ollama**: Must be installed and running locally
-- **gpt-oss:20b model**: Downloaded via `ollama pull gpt-oss:20b`
-- **Python 3.8+**: Required for all dependencies
 
 ## File Structure
 
 ```
 gold-digger/
-├── gold_fetcher.py              # Main price fetching script
-├── trading_analyzer.py          # AI trading analysis engine
-├── trading_prompt.txt           # Customizable AI prompt template
-├── query_example.py             # Data analysis examples
-├── run_complete_analysis.py     # Comprehensive analysis runner
-├── configure.py                 # Configuration management utility
-├── config.py                    # Configuration loading module
-├── .env                         # Configuration file (create from .env.example)
-├── .env.example                 # Example configuration file
-├── requirements.txt             # Python dependencies
-├── gold_prices.db              # SQLite database (created automatically)
-└── README.md                   # This file
+├── 📊 CORE SYSTEM
+│   ├── gold_fetcher.py              # Price data fetching & caching
+│   ├── trading_analyzer.py          # AI-powered trading analysis
+│   ├── config.py                    # Configuration management
+│   └── run_complete_analysis.py     # Comprehensive analysis runner
+│
+├── 📰 NEWS SYSTEM
+│   ├── news_fetcher.py              # News fetching & caching
+│   ├── news_analyzer.py             # Sentiment & market analysis
+│   ├── news_viewer.py               # Interactive news browser
+│   └── export_news_html.py          # HTML report generation
+│
+├── ⚙️ CONFIGURATION
+│   ├── configure.py                 # Setup & management utility
+│   ├── .env                         # Your configuration file
+│   ├── .env.example                 # Configuration template
+│   └── trading_prompt.txt           # AI analysis prompt template
+│
+├── 📋 UTILITIES
+│   ├── query_example.py             # Data analysis examples
+│   ├── requirements.txt             # Python dependencies
+│   └── README.md                    # This documentation
+│
+└── 💾 DATA (auto-generated)
+    ├── gold_prices.db               # SQLite database
+    ├── exports/                     # CSV exports directory
+    ├── *.csv                        # Individual data exports
+    ├── *.html                       # HTML reports
+    └── *.log                        # Log files
 ```
 
-## Important Notes
+## API Data Sources
 
-### Data & API:
-- Uses gold futures symbol `GC=F` from Yahoo Finance
-- Data is cached with timestamps to avoid duplicate fetching
-- Designed to run multiple times without wasting API calls
-- Market hours and holidays may affect data availability
+### Price Data
+- **Yahoo Finance** (`yfinance` library)
+- **Symbol**: GC=F (Gold Futures)
+- **Intervals**: 15m, 30m (configurable)
+- **Rate Limiting**: Built-in delays and retry logic
 
-### AI Analysis:
-- **Educational Purpose Only**: AI recommendations are for learning and research
-- **Not Financial Advice**: Always do your own research and consult professionals
-- **Model Limitations**: AI analysis based on historical price data only
-- **Internet Required**: Ollama needs to download models initially
-
-### Performance:
-- First run downloads ~13GB for gpt-oss:20b model
-- Subsequent runs are fast with cached data
-- AI analysis takes 10-30 seconds depending on system specs
+### News Data
+- **Yahoo Finance News API**
+- **Symbols**: GC=F, GOLD, GLD, IAU (configurable)
+- **Processing**: Sentiment analysis, categorization, keyword extraction
+- **Deduplication**: Content-based hashing prevents duplicates
 
 ## Troubleshooting
 
-### **Configuration Issues:**
+### Setup Issues
+```bash
+# Run configuration wizard
+python3 configure.py
 
-1. **Setup Problems**:
-   ```bash
-   # Run configuration wizard
-   python3 configure.py
-   
-   # Test current setup
-   python3 configure.py --test
-   
-   # Reset configuration
-   python3 configure.py --reset
-   ```
+# Test current setup
+python3 configure.py --test
 
-2. **Environment Variables Not Loading**:
-   ```bash
-   # Check if .env file exists
-   ls -la .env
-   
-   # Verify configuration
-   python3 gold_fetcher.py --config-summary
-   ```
+# Check configuration
+python3 gold_fetcher.py --config-summary
+```
 
-### **Common Issues:**
+### Ollama Issues
+```bash
+# Check if Ollama is running
+curl http://localhost:11434/api/tags
 
-1. **Ollama Connection Failed**:
-   ```bash
-   # Check Ollama host in .env
-   echo $OLLAMA_HOST
-   
-   # Start Ollama service
-   ollama serve
-   ```
+# Start Ollama
+ollama serve
 
-2. **Model Not Found**:
-   ```bash
-   # Install the model
-   ollama pull gpt-oss:20b
-   
-   # Or install via configurator
-   python3 configure.py --install-model
-   ```
+# Install model
+ollama pull gpt-oss:20b
 
-3. **No Market Data**:
-   - Check internet connection
-   - Verify market hours (gold markets closed on weekends)
-   - Try different date ranges
-   - Check `USE_MOCK_DATA=true` in `.env` for testing
+# Test with different model
+# Edit OLLAMA_MODEL in .env file
+```
 
-4. **Database Locked**:
-   - Close any other scripts accessing the database
-   - Check file permissions in the directory
-   - Verify `DATABASE_PATH` in `.env`
+### Database Issues
+```bash
+# Check if tables exist
+python3 -c "
+import sqlite3
+conn = sqlite3.connect('gold_prices.db')
+cursor = conn.cursor()
+cursor.execute('SELECT name FROM sqlite_master WHERE type=\"table\"')
+print('Tables:', cursor.fetchall())
+"
 
-5. **Missing Dependencies**:
-   ```bash
-   # Install all dependencies
-   python3 configure.py --install-deps
-   
-   # Or manually
-   pip install -r requirements.txt
-   ```
+# Reinitialize database
+rm gold_prices.db
+python3 gold_fetcher.py
+python3 news_fetcher.py --fetch
+```
+
+### Data Issues
+```bash
+# Test with mock data
+# Set USE_MOCK_DATA=true in .env
+# Set USE_MOCK_NEWS=true in .env
+
+# Check API connectivity
+python3 -c "import yfinance as yf; print(yf.Ticker('GC=F').info['regularMarketPrice'])"
+
+# Verify news data
+python3 -c "import yfinance as yf; print(len(yf.Ticker('GC=F').news))"
+```
+
+### Performance Issues
+```bash
+# Increase API delays in .env
+API_DELAY=2.0
+
+# Reduce data fetch amounts
+DEFAULT_FETCH_DAYS=7
+MAX_ARTICLES_PER_SYMBOL=20
+
+# Enable debug mode
+DEBUG_MODE=true
+```
+
+## Remote/Cloud Deployment
+
+### Docker Configuration
+```bash
+# Use remote Ollama instance
+OLLAMA_HOST=http://ollama-server:11434
+
+# Cloud database path
+DATABASE_PATH=/data/gold_prices.db
+
+# Log to files for monitoring
+ENABLE_FILE_LOGGING=true
+LOG_FILE=/logs/gold_digger.log
+```
+
+### Environment Examples
+```bash
+# Development
+OLLAMA_HOST=http://localhost:11434
+DEBUG_MODE=true
+USE_MOCK_DATA=false
+
+# Production
+OLLAMA_HOST=http://production-ollama:11434
+DEBUG_MODE=false
+LOG_LEVEL=WARNING
+ENABLE_FILE_LOGGING=true
+```
+
+## Security & Best Practices
+
+### Data Protection
+- Database contains market data only (no personal information)
+- API keys not required for Yahoo Finance
+- Local Ollama instance recommended for privacy
+- Regular backups of `.env` and database recommended
+
+### Performance Optimization
+- Configure appropriate `API_DELAY` to avoid rate limits
+- Use `MAX_RETRIES` for reliable data fetching
+- Enable `ENABLE_FILE_LOGGING` for production monitoring
+- Consider `USE_MOCK_DATA` for development/testing
+
+## Contributing
+
+### Development Setup
+```bash
+# Clone repository
+git clone <repository-url>
+cd gold-digger
+
+# Setup development environment
+python3 configure.py
+python3 configure.py --test
+
+# Enable debug mode
+echo "DEBUG_MODE=true" >> .env
+```
+
+### Adding Features
+- Follow existing code patterns
+- Add configuration options to `.env.example`
+- Update this README with new commands
+- Test with both real and mock data
+
+## Disclaimer
+
+⚠️ **Important**: This system is for educational and research purposes only. 
+
+- **Not Financial Advice**: AI recommendations are algorithmic analysis, not professional financial advice
+- **Market Risk**: All trading involves risk of loss
+- **Data Accuracy**: Market data accuracy depends on external APIs
+- **Personal Responsibility**: Always do your own research and consult financial professionals
+- **Testing Recommended**: Use paper trading to validate strategies
+
+## License
+
+This project is for educational use. Users are responsible for compliance with financial data provider terms of service and applicable trading regulations.
+
+---
+
+🏆 **Gold Digger System** - Comprehensive AI-Powered Gold Market Analysis  
+📊 Price Data • 📰 News Intelligence • 🤖 AI Trading Analysis • ⚙️ Complete Automation
