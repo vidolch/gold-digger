@@ -431,7 +431,7 @@ class GoldDiggerApp {
       const analysisDate = new Date(data.timestamp).toLocaleString();
       container.innerHTML = `
                 <div class="ai-summary-content">
-                    ${data.ai_summary || "AI summary not available"}
+                    ${this.convertMarkdownToHtml(data.ai_summary) || "AI summary not available"}
                 </div>
                 <div class="ai-summary-meta">
                     <small class="text-muted">
@@ -463,7 +463,7 @@ class GoldDiggerApp {
         container.innerHTML = `
           <div class="ai-summary-cached">
             <div class="ai-summary-content">
-              ${data.recommendation || "No recommendation available"}
+              ${this.convertMarkdownToHtml(data.recommendation) || "No recommendation available"}
             </div>
             <div class="ai-summary-meta">
               <small class="text-muted">
@@ -582,7 +582,7 @@ class GoldDiggerApp {
                 <div class="analysis-section">
                     <h4><i class="fas fa-robot"></i> AI Summary</h4>
                     <div class="ai-summary-content">
-                        ${data.ai_summary || "No summary available"}
+                        ${this.convertMarkdownToHtml(data.ai_summary) || "No summary available"}
                     </div>
                 </div>
 
@@ -811,6 +811,45 @@ class GoldDiggerApp {
       info: "Info",
     };
     return titles[type] || "Notification";
+  }
+
+  convertMarkdownToHtml(markdown) {
+    if (!markdown) return "";
+
+    // Check if marked library is available
+    if (typeof marked !== "undefined") {
+      try {
+        // Configure marked for better security and formatting
+        marked.setOptions({
+          breaks: true,
+          gfm: true,
+          headerIds: false,
+          mangle: false,
+        });
+
+        return marked.parse(markdown);
+      } catch (error) {
+        console.error("Error converting markdown:", error);
+        // Fallback to basic HTML formatting
+        return this.basicMarkdownToHtml(markdown);
+      }
+    }
+
+    // Fallback if marked is not available
+    return this.basicMarkdownToHtml(markdown);
+  }
+
+  basicMarkdownToHtml(markdown) {
+    // Basic markdown conversion as fallback
+    return markdown
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.*?)\*/g, "<em>$1</em>")
+      .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+      .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+      .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+      .replace(/^- (.*$)/gim, "<li>$1</li>")
+      .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>")
+      .replace(/\n/g, "<br>");
   }
 }
 

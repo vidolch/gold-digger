@@ -94,7 +94,7 @@ class GoldDataAnalyzer:
                 '''
 
                 df = pd.read_sql_query(query, conn)
-                df['datetime'] = pd.to_datetime(df['datetime'])
+                df['datetime'] = pd.to_datetime(df['datetime'], format='ISO8601', utc=True)
                 df = df.sort_values('datetime')
 
                 if len(df) < 2:
@@ -183,7 +183,7 @@ class GoldDataAnalyzer:
                     print("No data available for plotting")
                     return
 
-                df['datetime'] = pd.to_datetime(df['datetime'])
+                df['datetime'] = pd.to_datetime(df['datetime'], format='ISO8601', utc=True)
 
                 plt.figure(figsize=(12, 6))
                 plt.plot(df['datetime'], df['close'], linewidth=1)

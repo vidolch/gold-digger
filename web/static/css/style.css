@@ -982,6 +982,71 @@ body {
     margin-bottom: 1rem;
 }
 
+/* Markdown content styling for AI summary */
+.ai-summary-content h1,
+.ai-summary-content h2,
+.ai-summary-content h3,
+.ai-summary-content h4 {
+    color: var(--primary-color);
+    margin: 1rem 0 0.5rem 0;
+    font-weight: 600;
+}
+
+.ai-summary-content h1 {
+    font-size: 1.3rem;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.3rem;
+}
+
+.ai-summary-content h2 {
+    font-size: 1.2rem;
+}
+
+.ai-summary-content h3 {
+    font-size: 1.1rem;
+}
+
+.ai-summary-content strong {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.ai-summary-content em {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.ai-summary-content ul {
+    margin: 0.5rem 0;
+    padding-left: 1.2rem;
+}
+
+.ai-summary-content li {
+    margin: 0.3rem 0;
+    list-style-type: disc;
+}
+
+.ai-summary-content p {
+    margin: 0.8rem 0;
+}
+
+.ai-summary-content hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 1.5rem 0;
+}
+
+/* Code-like formatting for specific trading terms */
+.ai-summary-content strong:contains("SHORT"),
+.ai-summary-content strong:contains("LONG"),
+.ai-summary-content strong:contains("BUY"),
+.ai-summary-content strong:contains("SELL") {
+    background: rgba(212, 175, 55, 0.2);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-family: "Courier New", monospace;
+}
+
 .ai-summary-meta {
     border-top: 1px solid var(--border-color);
     padding-top: 0.5rem;

@@ -386,7 +386,7 @@ class GoldNewsFetcher:
                 df = pd.read_sql_query(query, conn, params=params)
 
                 if not df.empty:
-                    df['published_date'] = pd.to_datetime(df['published_date'])
+                    df['published_date'] = pd.to_datetime(df['published_date'], format='ISO8601', utc=True)
                     df['keywords'] = df['keywords'].apply(lambda x: json.loads(x) if x else [])
 
                 return df

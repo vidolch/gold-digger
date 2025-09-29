@@ -94,7 +94,7 @@ class TradingAnalyzer:
                 df = pd.read_sql_query(query, conn)
 
                 if not df.empty:
-                    df['datetime'] = pd.to_datetime(df['datetime'])
+                    df['datetime'] = pd.to_datetime(df['datetime'], format='ISO8601', utc=True)
 
                     # Make start_time timezone-aware to match database datetime format
                     end_time = datetime.now()

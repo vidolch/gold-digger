@@ -280,7 +280,7 @@ class GoldPriceFetcher:
                 )
 
                 if not df.empty:
-                    df['datetime'] = pd.to_datetime(df['datetime'])
+                    df['datetime'] = pd.to_datetime(df['datetime'], format='ISO8601', utc=True)
 
                 return df
 

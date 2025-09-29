@@ -10,9 +10,11 @@ from datetime import datetime
 import json
 import logging
 import pandas as pd
+import socket
 
 # Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(parent_dir)
 
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
@@ -37,11 +39,14 @@ CORS(app)
 # Get configuration
 config = get_config()
 
-# Initialize components
-gold_fetcher = GoldPriceFetcher()
-news_fetcher = GoldNewsFetcher()
-news_analyzer = GoldNewsAnalyzer()
-trading_analyzer = TradingAnalyzer()
+# Set database path to parent directory to use the main database
+db_path = os.path.join(parent_dir, 'gold_prices.db')
+
+# Initialize components with correct database path
+gold_fetcher = GoldPriceFetcher(db_path=db_path)
+news_fetcher = GoldNewsFetcher(db_path=db_path)
+news_analyzer = GoldNewsAnalyzer(db_path=db_path)
+trading_analyzer = TradingAnalyzer(db_path=db_path)
 
 
 @app.route('/')
@@ -290,8 +295,10 @@ def analyze_news():
             sentiment_trend = {'average_sentiment': 0, 'positive_articles': 0, 'negative_articles': 0, 'total_articles': len(news_df)}
             keyword_analysis = {'keywords': []}
 
-        # Extract sentiment data
-        avg_sentiment = sentiment_trend.get('average_sentiment', 0)
+        # Extract sentiment data from analyzer response
+        summary = sentiment_trend.get('summary', {})
+        avg_sentiment = summary.get('avg_sentiment', 0)
+        total_articles = summary.get('total_articles', 0)
 
         # Categorize sentiment
         if avg_sentiment > 0.1:
@@ -303,18 +310,28 @@ def analyze_news():
 
         # Get top keywords from keyword analysis
         top_keywords = []
-        if 'keywords' in keyword_analysis:
-            for kw_data in keyword_analysis['keywords'][:10]:
+        if 'top_keywords' in keyword_analysis:
+            for keyword, data in list(keyword_analysis['top_keywords'].items())[:10]:
                 top_keywords.append({
-                    'keyword': kw_data.get('keyword', ''),
-                    'count': kw_data.get('count', 0)
+                    'keyword': keyword,
+                    'count': data.get('count', 0)
                 })
 
-        # Calculate sentiment distribution
-        positive_count = sentiment_trend.get('positive_articles', 0)
-        negative_count = sentiment_trend.get('negative_articles', 0)
-        total_articles = sentiment_trend.get('total_articles', 0)
-        neutral_count = total_articles - positive_count - negative_count
+        # Calculate sentiment distribution from daily data
+        positive_count = 0
+        negative_count = 0
+        neutral_count = 0
+
+        for day_data in sentiment_trend.get('daily_data', []):
+            day_sentiment = day_data.get('avg_sentiment', 0)
+            day_count = day_data.get('article_count', 0)
+
+            if day_sentiment > 0.1:
+                positive_count += day_count
+            elif day_sentiment < -0.1:
+                negative_count += day_count
+            else:
+                neutral_count += day_count
 
         return jsonify({
             'overall_sentiment': avg_sentiment,
@@ -491,10 +508,26 @@ def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
 
+def is_port_in_use(port):
+    """Check if a port is already in use."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
+
 def main():
     """Run the Flask application."""
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') == 'development'
+
+    # Check if port is in use and find alternative
+    if is_port_in_use(port):
+        print(f"⚠️  Port {port} is in use, trying alternative ports...")
+        for alternative_port in range(5001, 5010):
+            if not is_port_in_use(alternative_port):
+                port = alternative_port
+                break
+        else:
+            print("❌ Could not find an available port between 5001-5009")
+            return
 
     print("🚀 Starting Gold Digger Web Application...")
     print(f"📊 Dashboard will be available at: http://localhost:{port}")
@@ -505,7 +538,13 @@ def main():
     if debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    app.run(host='0.0.0.0', port=port, debug=debug, threaded=True)
+    try:
+        app.run(host='0.0.0.0', port=port, debug=debug, threaded=True)
+    except OSError as e:
+        if "Address already in use" in str(e):
+            print(f"❌ Port {port} became unavailable. Please try again.")
+        else:
+            raise
 
 
 if __name__ == '__main__':
