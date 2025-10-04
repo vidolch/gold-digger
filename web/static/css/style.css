@@ -1073,3 +1073,26 @@ body {
 .ai-summary-placeholder .btn {
     margin-top: 1rem;
 }
+
+/* Last updated timestamp styling */
+.last-updated {
+    margin-bottom: 0.5rem;
+}
+
+.last-updated small {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+.last-updated i {
+    margin-right: 0.3rem;
+    color: var(--primary-color);
+}
+
+.header-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}

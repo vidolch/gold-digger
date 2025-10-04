@@ -7,8 +7,11 @@ Loads settings from environment variables with sensible defaults.
 import os
 import logging
 from pathlib import Path
-from typing import Union, Optional, List
+from typing import List
 from dotenv import load_dotenv
+
+# Get project root directory
+PROJECT_ROOT = Path(__file__).parent.parent
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -46,7 +49,13 @@ class Config:
     @property
     def database_path(self) -> str:
         """SQLite database file path."""
-        return os.getenv('DATABASE_PATH', 'gold_prices.db')
+        default_path = str(PROJECT_ROOT / 'data' / 'gold_prices.db')
+        env_path = os.getenv('DATABASE_PATH', default_path)
+
+        # If the path is relative, make it relative to PROJECT_ROOT
+        if not os.path.isabs(env_path):
+            return str(PROJECT_ROOT / env_path)
+        return env_path
 
     # ==========================================================================
     # TRADING ANALYSIS CONFIGURATION
@@ -65,7 +74,13 @@ class Config:
     @property
     def prompt_file(self) -> str:
         """Trading prompt template file path."""
-        return os.getenv('PROMPT_FILE', 'trading_prompt.txt')
+        default_path = str(PROJECT_ROOT / 'config' / 'trading_prompt.txt')
+        env_path = os.getenv('PROMPT_FILE', default_path)
+
+        # If the path is relative, make it relative to PROJECT_ROOT
+        if not os.path.isabs(env_path):
+            return str(PROJECT_ROOT / 'config' / env_path)
+        return env_path
 
     # ==========================================================================
     # DATA FETCHING CONFIGURATION
@@ -143,7 +158,13 @@ class Config:
     @property
     def log_file(self) -> str:
         """Log file path."""
-        return os.getenv('LOG_FILE', 'gold_digger.log')
+        default_path = str(PROJECT_ROOT / 'logs' / 'gold_digger.log')
+        env_path = os.getenv('LOG_FILE', default_path)
+
+        # If the path is relative, make it relative to PROJECT_ROOT
+        if not os.path.isabs(env_path):
+            return str(PROJECT_ROOT / 'logs' / env_path)
+        return env_path
 
     # ==========================================================================
     # EXPORT CONFIGURATION
@@ -152,7 +173,13 @@ class Config:
     @property
     def export_dir(self) -> str:
         """Export directory for CSV files."""
-        return os.getenv('EXPORT_DIR', 'exports')
+        default_path = str(PROJECT_ROOT / 'data' / 'exports')
+        env_path = os.getenv('EXPORT_DIR', default_path)
+
+        # If the path is relative, make it relative to PROJECT_ROOT
+        if not os.path.isabs(env_path):
+            return str(PROJECT_ROOT / 'data' / env_path)
+        return env_path
 
     @property
     def export_include_volume(self) -> bool:

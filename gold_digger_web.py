@@ -2,6 +2,9 @@
 """
 Gold Digger Web Application Launcher
 Simple launcher script for the Gold Digger web-based trading terminal.
+
+This script provides a convenient way to launch the web interface with
+various configuration options while handling the new organized structure.
 """
 
 import sys
@@ -25,148 +28,123 @@ def check_dependencies():
 
 def setup_environment():
     """Setup the environment for the web application."""
-    # Add current directory to Python path
-    current_dir = Path(__file__).parent
-    if str(current_dir) not in sys.path:
-        sys.path.insert(0, str(current_dir))
+    # Get project root directory
+    project_root = Path(__file__).parent
 
-    # Set Flask environment variables if not already set
-    if 'FLASK_ENV' not in os.environ:
-        os.environ['FLASK_ENV'] = 'development'
+    # Add src directory to Python path for imports
+    src_dir = project_root / 'src'
+    config_dir = project_root / 'config'
 
-    # Set default port if not specified
-    if 'PORT' not in os.environ:
-        os.environ['PORT'] = '5000'
+    if str(src_dir) not in sys.path:
+        sys.path.insert(0, str(src_dir))
+    if str(config_dir) not in sys.path:
+        sys.path.insert(0, str(config_dir))
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
 
-def initialize_data():
-    """Initialize application data."""
-    try:
-        # Import and run initialization
-        from init_web_data import main as init_main
-        result = init_main()
-        return result == 0
-    except Exception as e:
-        print(f"❌ Error initializing data: {e}")
-        return False
+def launch_web_app(port=5000, host='localhost', debug=False, production=False):
+    """Launch the Gold Digger web application."""
 
-def print_welcome():
-    """Print welcome message and instructions."""
-    print("🌟" + "="*60 + "🌟")
-    print("    🥇 GOLD DIGGER - WEB TRADING TERMINAL 🥇")
-    print("🌟" + "="*60 + "🌟")
-    print()
-    print("📊 Modern web-based interface for gold trading analysis")
-    print("🔄 Real-time price monitoring and news analysis")
-    print("🤖 AI-powered market insights and sentiment analysis")
-    print()
+    print("🚀 Gold Digger Web Application")
+    print("=" * 40)
 
-def main():
-    parser = argparse.ArgumentParser(description='Gold Digger Web Application')
-    parser.add_argument('--port', type=int, default=5000, help='Port to run the server on')
-    parser.add_argument('--host', default='localhost', help='Host to bind to')
-    parser.add_argument('--debug', action='store_true', help='Run in debug mode')
-    parser.add_argument('--production', action='store_true', help='Run in production mode with Gunicorn')
-    parser.add_argument('--check-deps', action='store_true', help='Check dependencies and exit')
-
-    args = parser.parse_args()
-
-    # Check dependencies
+    # Check dependencies first
     if not check_dependencies():
-        if args.check_deps:
-            sys.exit(1)
-        print("\nWould you like to install dependencies now? (y/n): ", end='')
-        if input().lower().startswith('y'):
-            try:
-                subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
-                print("✅ Dependencies installed successfully!")
-            except subprocess.CalledProcessError:
-                print("❌ Failed to install dependencies")
-                sys.exit(1)
-        else:
-            sys.exit(1)
-
-    if args.check_deps:
-        print("✅ All dependencies are installed!")
-        sys.exit(0)
+        sys.exit(1)
 
     # Setup environment
     setup_environment()
 
-    # Initialize data if needed
-    if not initialize_data():
-        print("❌ Failed to initialize application data")
-        if not input("Continue anyway? (y/n): ").lower().startswith('y'):
-            sys.exit(1)
+    # Set environment variables
+    os.environ['PORT'] = str(port)
+    os.environ['HOST'] = host
 
-    # Set port
-    os.environ['PORT'] = str(args.port)
-
-    # Print welcome message
-    print_welcome()
+    if production:
+        os.environ['FLASK_ENV'] = 'production'
+        print(f"🌐 Starting in PRODUCTION mode on http://{host}:{port}")
+    elif debug:
+        os.environ['FLASK_ENV'] = 'development'
+        print(f"🔧 Starting in DEBUG mode on http://{host}:{port}")
+    else:
+        os.environ['FLASK_ENV'] = 'development'
+        print(f"🌐 Starting in DEVELOPMENT mode on http://{host}:{port}")
 
     try:
-        if args.production:
-            # Production mode with Gunicorn
-            print(f"🚀 Starting Gold Digger Web App in PRODUCTION mode...")
-            print(f"🌐 Server will be available at: http://{args.host}:{args.port}")
-            print("💡 Press Ctrl+C to stop the server")
-            print()
+        # Import and run the web app from the web directory
+        web_dir = Path(__file__).parent / 'web'
+        sys.path.insert(0, str(web_dir))
 
-            # Import and check if gunicorn is available
-            try:
-                import gunicorn
-            except ImportError:
-                print("❌ Gunicorn not found. Installing...")
-                subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'gunicorn'])
+        # Change to web directory
+        os.chdir(web_dir)
 
-            # Run with gunicorn
-            cmd = [
-                'gunicorn',
-                '--bind', f'{args.host}:{args.port}',
-                '--workers', '4',
-                '--timeout', '120',
-                '--access-logfile', '-',
-                '--error-logfile', '-',
-                'web.app:app'
-            ]
-            subprocess.run(cmd)
-
-        else:
-            # Development mode
-            if args.debug:
-                os.environ['FLASK_ENV'] = 'development'
-                print(f"🚀 Starting Gold Digger Web App in DEBUG mode...")
-            else:
-                print(f"🚀 Starting Gold Digger Web App in DEVELOPMENT mode...")
-
-            print(f"🌐 Dashboard will be available at: http://{args.host}:{args.port}")
-            print("💡 Press Ctrl+C to stop the server")
-            print()
-
-            # Import the Flask app
-            from web.app import app
-
-            # Run the Flask app
-            app.run(
-                host=args.host,
-                port=args.port,
-                debug=args.debug,
-                use_reloader=False  # Disable reloader to avoid double startup
-            )
-
-    except KeyboardInterrupt:
-        print("\n👋 Gold Digger Web App stopped.")
-        print("Thank you for using Gold Digger!")
+        # Import and run the web app
+        from app import main as web_main
+        web_main()
 
     except ImportError as e:
-        print(f"❌ Import error: {e}")
-        print("Make sure you're running this from the Gold Digger directory")
-        print("and all dependencies are installed.")
+        print(f"❌ Error importing web application: {e}")
+        print("Make sure you're running from the gold-digger directory")
         sys.exit(1)
-
     except Exception as e:
         print(f"❌ Error starting web application: {e}")
-        print("Please check your configuration and try again.")
+        sys.exit(1)
+
+def main():
+    """Main entry point with command-line argument parsing."""
+    parser = argparse.ArgumentParser(
+        description='Gold Digger Web Application Launcher',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python gold_digger_web.py                    # Start with defaults
+  python gold_digger_web.py --port 8080        # Custom port
+  python gold_digger_web.py --debug            # Debug mode
+  python gold_digger_web.py --production       # Production mode
+  python gold_digger_web.py --host 0.0.0.0     # Allow external access
+        """
+    )
+
+    parser.add_argument(
+        '--port',
+        type=int,
+        default=5000,
+        help='Port number for the web server (default: 5000)'
+    )
+
+    parser.add_argument(
+        '--host',
+        type=str,
+        default='localhost',
+        help='Host address for the web server (default: localhost)'
+    )
+
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Run in debug mode with auto-reload'
+    )
+
+    parser.add_argument(
+        '--production',
+        action='store_true',
+        help='Run in production mode'
+    )
+
+    args = parser.parse_args()
+
+    # Launch the web application
+    try:
+        launch_web_app(
+            port=args.port,
+            host=args.host,
+            debug=args.debug,
+            production=args.production
+        )
+    except KeyboardInterrupt:
+        print("\n👋 Gold Digger Web App stopped. Thank you for using Gold Digger!")
+        sys.exit(0)
+    except Exception as e:
+        print(f"\n❌ Unexpected error: {e}")
         sys.exit(1)
 
 if __name__ == '__main__':

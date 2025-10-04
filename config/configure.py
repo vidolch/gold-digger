@@ -223,19 +223,20 @@ def test_setup():
     try:
         # Import config to test
         sys.path.append('.')
-        from config import get_config
+        sys.path.append('../src')
+        from config.config import get_config
         config = get_config()
 
         print("✅ Configuration loaded successfully")
 
         # Test database creation
-        from gold_fetcher import GoldPriceFetcher
+        from src.core.gold_fetcher import GoldPriceFetcher
         fetcher = GoldPriceFetcher()
         print("✅ Database initialization successful")
 
         # Test Ollama connection (if not skipped)
         if not config.skip_model_check:
-            from trading_analyzer import TradingAnalyzer
+            from src.core.trading_analyzer import TradingAnalyzer
             analyzer = TradingAnalyzer()
             print("✅ Ollama connection successful")
 

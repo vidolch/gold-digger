@@ -13,6 +13,11 @@ import logging
 import sys
 from typing import Optional, Tuple
 import argparse
+import os
+
+# Add config path for imports
+config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'config')
+sys.path.insert(0, config_path)
 from config import get_config
 
 # Get configuration
@@ -81,6 +86,13 @@ class GoldPriceFetcher:
                 if result and result[0] and result[1]:
                     min_date = datetime.fromisoformat(result[0])
                     max_date = datetime.fromisoformat(result[1])
+
+                    # Ensure timezone consistency
+                    if min_date.tzinfo is None:
+                        min_date = min_date.replace(tzinfo=datetime.now().astimezone().tzinfo)
+                    if max_date.tzinfo is None:
+                        max_date = max_date.replace(tzinfo=datetime.now().astimezone().tzinfo)
+
                     return min_date, max_date
 
                 return None, None
@@ -293,6 +305,12 @@ class GoldPriceFetcher:
         days = days or config.default_fetch_days
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
+
+        # Make dates timezone-aware to match database format
+        if start_date.tzinfo is None:
+            start_date = start_date.replace(tzinfo=datetime.now().astimezone().tzinfo)
+        if end_date.tzinfo is None:
+            end_date = end_date.replace(tzinfo=datetime.now().astimezone().tzinfo)
 
         logger.info(f"Starting gold price fetch for last {days} days")
         logger.info(f"Date range: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")

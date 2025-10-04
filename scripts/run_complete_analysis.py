@@ -13,11 +13,14 @@ import argparse
 # Add current directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from gold_fetcher import GoldPriceFetcher
-from trading_analyzer import TradingAnalyzer
-from news_fetcher import GoldNewsFetcher
-from news_analyzer import GoldNewsAnalyzer
-from config import get_config
+# Add src to path for imports
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'src'))
+
+from src.core.gold_fetcher import GoldPriceFetcher
+from src.core.news_fetcher import GoldNewsFetcher
+from src.core.news_analyzer import GoldNewsAnalyzer
+from src.core.trading_analyzer import TradingAnalyzer
+from config.config import get_config
 
 # Get configuration
 config = get_config()

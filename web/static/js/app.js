@@ -139,6 +139,9 @@ class GoldDiggerApp {
 
     // Initialize sentiment placeholder
     this.initializeSentimentDisplay();
+
+    // Update last refresh time for initial load
+    this.updateLastRefreshTime();
   }
 
   async loadSystemStatus() {
@@ -185,15 +188,27 @@ class GoldDiggerApp {
     }
   }
 
-  async loadPriceChart() {
+  async loadPriceChart(forceFresh = false) {
     const chartContainer = document.getElementById("price-chart");
     if (!chartContainer) return;
 
     try {
       console.log(`Loading price chart (${this.chartInterval})...`);
-      chartContainer.innerHTML = '<div class="loading">Loading chart...</div>';
 
-      const response = await fetch(`/api/prices/chart/${this.chartInterval}`);
+      if (forceFresh) {
+        chartContainer.innerHTML =
+          '<div class="loading">Fetching fresh price data...</div>';
+      } else {
+        chartContainer.innerHTML =
+          '<div class="loading">Loading chart...</div>';
+      }
+
+      // Use fresh data endpoint if forceFresh is true
+      const endpoint = forceFresh
+        ? `/api/prices/chart/${this.chartInterval}/fresh`
+        : `/api/prices/chart/${this.chartInterval}`;
+
+      const response = await fetch(endpoint);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -218,17 +233,34 @@ class GoldDiggerApp {
     }
   }
 
-  async loadPriceTable() {
+  async loadPriceTable(forceFresh = false) {
     const interval = document.getElementById("price-interval")?.value || "15m";
     const tableBody = document.querySelector("#price-table tbody");
 
     if (!tableBody) return;
 
     try {
-      tableBody.innerHTML =
-        '<tr><td colspan="6" class="loading-cell">Loading price data...</td></tr>';
+      if (forceFresh) {
+        tableBody.innerHTML =
+          '<tr><td colspan="6" class="loading-cell">Fetching fresh price data...</td></tr>';
+      } else {
+        tableBody.innerHTML =
+          '<tr><td colspan="6" class="loading-cell">Loading price data...</td></tr>';
+      }
 
-      const response = await fetch(`/api/prices/${interval}`);
+      // Use fresh data endpoint if forceFresh is true
+      let response;
+      if (forceFresh) {
+        // First fetch fresh data
+        const freshResponse = await fetch("/api/prices/fetch");
+        if (!freshResponse.ok) {
+          throw new Error("Failed to fetch fresh price data");
+        }
+        // Then get the updated data
+        response = await fetch(`/api/prices/${interval}`);
+      } else {
+        response = await fetch(`/api/prices/${interval}`);
+      }
       const data = await response.json();
 
       if (data.error) {
@@ -737,9 +769,45 @@ class GoldDiggerApp {
     return html;
   }
 
-  refreshAll() {
-    this.showToast("Refreshing all data...", "info");
-    this.loadInitialData();
+  async refreshAll() {
+    this.showToast("Fetching fresh data...", "info");
+    this.showLoading();
+
+    try {
+      // First fetch fresh price data
+      const priceResponse = await fetch("/api/prices/fetch");
+      if (!priceResponse.ok) {
+        throw new Error("Failed to fetch fresh price data");
+      }
+
+      // Then fetch fresh news data
+      const newsResponse = await fetch("/api/news/fetch");
+      if (!newsResponse.ok) {
+        console.warn(
+          "Failed to fetch fresh news data, continuing with cached data",
+        );
+      }
+
+      // Now load all data with fresh information
+      await Promise.all([
+        this.loadSystemStatus(),
+        this.loadCurrentPrice(),
+        this.loadPriceChart(true), // Force fresh chart data
+        this.loadRecentHeadlines(),
+        this.loadPriceTable(true), // Force fresh table data
+      ]);
+
+      this.showToast("All data refreshed successfully!", "success");
+      this.updateLastRefreshTime();
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+      this.showToast("Error refreshing some data", "error");
+
+      // Still try to load cached data
+      this.loadInitialData();
+    } finally {
+      this.hideLoading();
+    }
   }
 
   startAutoRefresh() {
@@ -850,6 +918,15 @@ class GoldDiggerApp {
       .replace(/^- (.*$)/gim, "<li>$1</li>")
       .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>")
       .replace(/\n/g, "<br>");
+  }
+
+  updateLastRefreshTime() {
+    const lastUpdatedElement = document.getElementById("last-updated-text");
+    if (lastUpdatedElement) {
+      const now = new Date();
+      const timeString = now.toLocaleString();
+      lastUpdatedElement.innerHTML = `<i class="fas fa-clock"></i> Last updated: ${timeString}`;
+    }
   }
 }
 

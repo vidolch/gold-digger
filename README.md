@@ -1,791 +1,354 @@
-# Gold Digger 📈💰📰
-
-A comprehensive Python system that fetches gold price data and news, caches them intelligently in SQLite, and provides AI-powered trading analysis using Ollama's gpt-oss:20b model for CFD trading recommendations.
-
-## 🚀 NEW: Modern TUI Interface
-
-**Experience Gold Digger through our beautiful, interactive Text User Interface (TUI):**
-
-```bash
-# Launch the modern TUI interface (recommended)
-./gold_digger.sh --tui
-
-# Or directly with Python
-python3 gold_digger_tui.py
-
-# Try demo mode with sample data
-python3 gold_digger_tui.py --demo
-```
-
-**🎨 TUI Features:**
-- 🖥️ Beautiful, responsive interface with real-time updates
-- 🎛️ Interactive panels, tabs, and navigation
-- 📊 Live data visualization and progress indicators
-- 🌓 Dark/Light mode toggle
-- ⌨️ Full keyboard shortcuts and mouse support
-- 📱 Responsive design for different terminal sizes
-
-**📟 Classic Terminal Interface:**
-
-```bash
-# Classic menu-based interface
-./gold_digger.sh
-
-# Or directly with Python
-python3 gold_digger_terminal.py
-```
-
-**✨ Both interfaces provide:**
-- 📊 All price data fetching and analysis
-- 📰 Complete news management and sentiment analysis  
-- 🤖 AI trading recommendations
-- ⚙️ Configuration and setup tools
-- 📋 Data exploration and export features
-
-**No more running multiple scripts!** Everything is accessible through beautiful, unified interfaces.
-
-## Features
-
-### 📊 Data Fetching & Caching
-- **Smart Price Caching**: Fetches gold prices in 15m and 30m intervals with intelligent duplicate avoidance
-- **News Aggregation**: Collects news from multiple gold-related symbols (GC=F, GOLD, GLD, IAU)
-- **SQLite Storage**: Efficient local caching prevents redundant API calls
-- **Automatic Deduplication**: Content hashing prevents duplicate articles
-- **Rate Limiting**: Configurable delays to respect API limits
-
-### 🤖 AI Trading Analysis
-- **Ollama Integration**: Uses gpt-oss:20b model for intelligent market analysis
-- **Multi-Modal Analysis**: Combines price data with news sentiment for comprehensive insights
-- **CFD Trading Focus**: Specialized for Contract for Difference trading recommendations
-- **Risk Assessment**: Provides position recommendations with stop-loss and take-profit levels
-- **Historical Tracking**: Saves all recommendations to database for performance analysis
-
-### 📰 News Intelligence System
-- **Sentiment Analysis**: Advanced sentiment scoring (-1.0 to +1.0) for market impact assessment
-- **Smart Categorization**: Auto-categorizes news (monetary_policy, market_movement, geopolitical, etc.)
-- **Keyword Extraction**: Identifies trending keywords and their market implications
-- **Publisher Analysis**: Tracks publisher sentiment bias and reliability
-- **Market Signal Detection**: Identifies news-driven trading opportunities
-
-### 🔧 Configuration & Customization
-- **Environment Variables**: Complete .env configuration system
-- **Customizable Prompts**: AI analysis prompts stored in editable files
-- **Multiple Export Formats**: CSV, HTML, and database exports
-- **Interactive Tools**: Command-line browsers and web interfaces
-- **Mock Data Support**: Testing capabilities with synthetic data
-
-## Prerequisites
-
-### Quick Setup (Recommended)
-```bash
-# Clone the repository
-cd gold-digger
-
-# Run automated setup
-python3 configure.py --quick
-
-# Or use the modern TUI interface
-./gold_digger.sh --tui
-```
-
-## 🌐 Web Interface Guide
-
-The web interface is the easiest way to use Gold Digger. It provides a modern, intuitive dashboard accessible from any web browser.
-
-### Launch Options
-
-```bash
-# Default launch (localhost:5000)
-./gold_digger_web.sh
-
-# Custom port
-./gold_digger_web.sh --port 8080
-
-# Custom host (for network access)
-./gold_digger_web.sh --host 0.0.0.0 --port 5000
-
-# Debug mode (development)
-./gold_digger_web.sh --debug
-
-# Production mode (with Gunicorn)
-./gold_digger_web.sh --production
-
-# Setup environment only
-./gold_digger_web.sh --setup-only
-
-# Help
-./gold_digger_web.sh --help
-```
-
-### Web Interface Features
-
-- **Dashboard**: Overview with price charts, sentiment analysis, and recent news
-- **Price Data**: Interactive charts with multiple timeframes (15m, 30m, 1h, 1d)
-- **News Feed**: Real-time news with filtering and sentiment scoring
-- **Analysis Tools**: Complete market analysis, sentiment analysis, and trading signals
-- **Auto-refresh**: Real-time updates every 5 minutes
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
-
-### Accessing the Dashboard
-
-1. Start the web server using one of the launch commands above
-2. Open your browser and go to `http://localhost:5000` (or your custom host/port)
-3. The dashboard will load with live data and charts
-4. Navigate between tabs to access different features
-
-### Web Interface Tabs
-
-- **Dashboard**: Overview with key metrics and charts
-- **Prices**: Detailed price data with interactive charts and tables
-- **News**: News articles with filtering and sentiment analysis
-- **Analysis**: AI-powered analysis tools and trading insights
-
-## 🎨 TUI Interface Guide
-
-### Launch Options
-```bash
-# Modern TUI (recommended)
-./gold_digger.sh --tui
-python3 gold_digger_tui.py
-
-# Demo mode with sample data
-python3 gold_digger_tui.py --demo
-
-# TUI with dependency auto-install
-python3 gold_digger_tui_launcher.py
-```
-
-### TUI Features
-- 🎛️ **Interactive Dashboard**: Real-time status and quick actions
-- 📊 **Trading Analysis Screen**: AI recommendations with live updates  
-- 📰 **News & Sentiment Screen**: Browse articles, sentiment analysis
-- 💾 **Database Screen**: Statistics and data exploration with tabs
-- ⚙️ **Configuration Screen**: View and edit system settings
-- 🌓 **Theme Support**: Dark/Light mode with beautiful styling
-
-### Keyboard Shortcuts
-```bash
-# Global shortcuts
-Q           - Quit application
-D           - Toggle dark/light mode
-H           - Show help information
-ESC         - Go back to previous screen
-Ctrl+R      - Refresh current screen
-
-# Context-specific shortcuts
-F           - Fetch data (news/prices)
-A           - Run analysis
-S           - Search/Save
-R           - Refresh data
-```
-
-### TUI Navigation
-- Use **TAB** and **Shift+TAB** to navigate between elements
-- **ENTER** to activate buttons and selections
-- **Arrow keys** for scrolling and selection
-- **Mouse support** for clicking and scrolling
-- **ESC** to go back or exit modals
-
-### Manual Setup
-
-#### 1. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-#### 2. Configure Environment
-```bash
-# Copy configuration template
-cp .env.example .env
-
-# Edit with your preferences
-nano .env
-```
-
-#### 3. Install Ollama & Model
-```bash
-# Install Ollama from https://ollama.ai
-ollama serve
-
-# Install required model
-ollama pull gpt-oss:20b
-```
-
-#### 4. Verify Setup
-```bash
-python3 configure.py --test
-```
-
-## Usage Guide
-
-### 🚀 Quick Start Commands
-
-**RECOMMENDED: Use the Modern TUI Interface**
-```bash
-# Start the modern TUI interface (best experience)
-./gold_digger.sh --tui
-
-# Try demo mode with sample data
-python3 gold_digger_tui.py --demo
-
-# Classic terminal interface
-./gold_digger.sh
-
-# Quick analysis without interactive menu
-./gold_digger.sh --quick
-
-# Test your setup
-./gold_digger.sh --test
-
-# Show configuration
-./gold_digger.sh --config
-```
-
-**Alternative: Individual Scripts (Legacy)**
-```bash
-# Activate virtual environment (if using one)
-source venv/bin/activate
-
-# Complete analysis workflow
-python3 run_complete_analysis.py --quick
-
-# Just price analysis
-python3 gold_fetcher.py --analyze
-
-# News-only analysis
-python3 run_complete_analysis.py --news-only
-```
-
-### 📈 Price Data Commands
-
-```bash
-# Fetch gold prices (creates database)
-python3 gold_fetcher.py
-
-# Fetch with custom parameters
-python3 gold_fetcher.py --days 30
-
-# Get trading analysis
-python3 gold_fetcher.py --analyze
-
-# Skip fetching, just analyze
-python3 gold_fetcher.py --skip-fetch --analyze
-
-# View configuration
-python3 gold_fetcher.py --config-summary
-```
-
-### 📰 News Commands
-
-```bash
-# Fetch latest news
-python3 news_fetcher.py --fetch
-
-# View news summary
-python3 news_fetcher.py --summary
-
-# Search news by keyword
-python3 news_fetcher.py --search "fed"
-python3 news_fetcher.py --search "inflation"
-
-# Recent headlines
-python3 news_fetcher.py --headlines 15
-
-# Filter by category
-python3 news_fetcher.py --headlines 20 --category monetary_policy
-```
-
-### 🔍 Advanced News Viewing
-
-```bash
-# Interactive news browser
-python3 news_viewer.py --interactive
-
-# Browse with details
-python3 news_viewer.py --browse --limit 10 --details
-
-# Database statistics
-python3 news_viewer.py --stats
-
-# Search with filters
-python3 news_viewer.py --search "central bank" --details
-
-# View specific article
-python3 news_viewer.py --article 42
-
-# Filter by sentiment
-python3 news_viewer.py --browse --min-sentiment 0.2
-```
-
-### 📊 News Analysis Commands
-
-```bash
-# Complete trading analysis
-python3 news_analyzer.py --trading-summary
-
-# Sentiment trend analysis
-python3 news_analyzer.py --sentiment --days 7
-
-# Category breakdown
-python3 news_analyzer.py --categories
-
-# Keyword analysis
-python3 news_analyzer.py --keywords --days 5
-
-# Publisher analysis
-python3 news_analyzer.py --publishers
-```
-
-### 🤖 AI Trading Analysis
-
-```bash
-# AI recommendation with news
-python3 trading_analyzer.py
-
-# Fetch news first, then analyze
-python3 trading_analyzer.py --fetch-news
-
-# Price analysis only (no news)
-python3 trading_analyzer.py --no-news
-
-# Custom parameters
-python3 trading_analyzer.py --interval 30m --hours 48
-
-# View configuration
-python3 trading_analyzer.py --config-summary
-```
-
-### 🏆 Complete Analysis Suite
-
-```bash
-# Full comprehensive analysis
-python3 run_complete_analysis.py
-
-# Quick mode (price + news + AI)
-python3 run_complete_analysis.py --quick
-
-# Custom time periods
-python3 run_complete_analysis.py --days 21
-
-# Skip specific components
-python3 run_complete_analysis.py --skip-news-fetch
-python3 run_complete_analysis.py --skip-trading
-
-# News-only mode
-python3 run_complete_analysis.py --news-only
-```
-
-### 📤 Export & Visualization
-
-```bash
-# Export news to HTML
-python3 export_news_html.py --days 7 --output report.html
-
-# Export data using query examples
-python3 query_example.py
-
-# Create price trend charts
-python3 query_example.py  # Uncomment plotting lines
-```
-
-### ⚙️ Configuration Management
-
-```bash
-# Interactive setup wizard
-python3 configure.py
-
-# Install dependencies only
-python3 configure.py --install-deps
-
-# Install Ollama model only
-python3 configure.py --install-model
-
-# Test current setup
-python3 configure.py --test
-
-# Reset configuration
-python3 configure.py --reset
-```
-
-## Web Interface Configuration
-
-The web interface uses the same configuration as the terminal version but adds web-specific options:
-
-### Web Server Settings
-
-```bash
-# .env file additions for web interface
-PORT=5000                    # Web server port
-HOST=localhost              # Web server host
-FLASK_ENV=development       # Flask environment (development/production)
-```
-
-### Production Deployment
-
-For production deployment, use:
-
-```bash
-# Launch in production mode
-./gold_digger_web.sh --production --host 0.0.0.0 --port 5000
-
-# Or with environment variables
-export FLASK_ENV=production
-export HOST=0.0.0.0
-export PORT=5000
-python3 gold_digger_web.py --production
-```
-
-## Configuration (.env)
-
-### Core Settings
-```bash
-# Ollama Configuration
-OLLAMA_HOST=http://localhost:11434    # Ollama server address
-OLLAMA_MODEL=gpt-oss:20b             # AI model to use
-OLLAMA_TIMEOUT=120                   # Request timeout
-
-# Database
-DATABASE_PATH=gold_prices.db         # SQLite database location
-
-# Analysis Defaults
-DEFAULT_INTERVAL=15m                 # Price data interval
-DEFAULT_ANALYSIS_HOURS=24           # Hours of data to analyze
-DEFAULT_FETCH_DAYS=14               # Days of historical data
-DEFAULT_NEWS_DAYS=7                 # Days of news to analyze
-
-# News Configuration
-NEWS_SYMBOLS=GC=F,GOLD,GLD,IAU      # Symbols to fetch news from
-MAX_ARTICLES_PER_SYMBOL=30          # Articles per symbol
-ENABLE_SENTIMENT_ANALYSIS=true      # Enable sentiment analysis
-AUTO_CATEGORIZE_NEWS=true           # Auto-categorize articles
-```
-
-### Advanced Settings
-```bash
-# API Configuration
-API_DELAY=1.0                       # Delay between API calls
-MAX_RETRIES=3                       # Retry failed calls
-YFINANCE_TIMEOUT=30                # Yahoo Finance timeout
-
-# Risk Management
-DEFAULT_RISK_LEVEL=MEDIUM          # LOW, MEDIUM, HIGH
-DEFAULT_POSITION_SIZE=0.05         # Position size as % of portfolio
-
-# Development
-DEBUG_MODE=false                   # Enable debug output
-USE_MOCK_DATA=false               # Use synthetic data
-USE_MOCK_NEWS=false               # Use synthetic news
-```
-
-## Interactive Commands Reference
-
-### News Viewer Interactive Mode
-```bash
-python3 news_viewer.py --interactive
-
-# Commands within interactive mode:
-stats                    # Show database statistics
-browse [number]         # Browse recent headlines
-search <keyword>        # Search articles
-article <id>           # View specific article details
-quit                   # Exit interactive mode
-```
-
-### Available Categories
-- `monetary_policy` - Federal Reserve, interest rates, central bank decisions
-- `market_movement` - Trading activity, price movements, market trends
-- `geopolitical` - International tensions, wars, political events
-- `economic_data` - GDP, employment, inflation data
-- `supply_demand` - Mining, production, commodity supply chains
-- `general` - Other gold-related news
-
-## Database Schema
-
-### Price Data Tables
-```sql
--- 15-minute interval gold prices
-gold_prices_15m (datetime, open, high, low, close, volume, created_at)
-
--- 30-minute interval gold prices
-gold_prices_30m (datetime, open, high, low, close, volume, created_at)
-
--- AI trading recommendations
-trading_recommendations (timestamp, interval_used, current_price, recommendation, success)
-```
-
-### News Data Tables
-```sql
--- News articles with sentiment analysis
-gold_news (id, title, summary, link, publisher, published_date, symbol, 
-          sentiment_score, keywords, category, created_at)
-
--- News fetch history for monitoring
-news_fetch_history (symbol, fetch_date, articles_count, success, error_message)
-```
-
-## Sample Outputs
-
-### AI Trading Recommendation
-```
-🏆 GOLD TRADING ANALYSIS & RECOMMENDATION
-📊 Analysis Time: 2025-09-28T10:30:15
-📈 Current Gold Price: $2,045.50
-📰 Analysis Type: News + Price Analysis
-
-🤖 AI TRADING RECOMMENDATION:
-**TRADING RECOMMENDATION:**
-- Position: LONG
-- Confidence Level: HIGH
-- Entry Price Target: $2,043.00
-- Stop Loss: $2,035.00
-- Take Profit: $2,055.00
-
-**REASONING:**
-Gold shows strong bullish momentum supported by technical breakout 
-and positive news sentiment around Federal Reserve dovish signals.
-
-**KEY FACTORS:**
-- Strong support at $2,040 level
-- Volume increase on advances
-- Fed uncertainty driving positive sentiment (0.35 score)
-- Geopolitical tensions supporting safe-haven demand
-
-**RISK ASSESSMENT:**
-- Risk Level: MEDIUM
-- Risk/Reward Ratio: 1:1.5
-- News Risk Factor: Positive sentiment reduces downside risk
-```
-
-### News Analysis Summary
-```
-📰 GOLD NEWS CACHE SUMMARY
-📊 Total Articles: 40
-📈 Average Sentiment: 0.191 (slightly positive)
-🗓️ Date Range: 2025-09-21 to 2025-09-28
-
-📂 Articles by Category:
-• Market Movement: 9
-• General: 5
-• Supply Demand: 3
-• Geopolitical: 2
-
-📺 Top Publishers:
-• Simply Wall St.: 7
-• MarketWatch: 6
-• Reuters: 3
-```
-
-## File Structure
+# 🏆 Gold Digger - Professional Gold Trading Analysis System
+
+A comprehensive, professional-grade gold trading analysis system with real-time data fetching, sentiment analysis, AI-powered recommendations, and multiple user interfaces.
+
+![Gold Digger Logo](https://img.shields.io/badge/Gold%20Digger-v1.0.0-gold?style=for-the-badge&logo=chart-line)
+![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat-square&logo=python)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
+
+## 🌟 Features
+
+### 📊 **Real-Time Data Analysis**
+- Live gold price fetching from Yahoo Finance
+- Historical data caching with SQLite
+- Multiple timeframe analysis (15m, 30m, 1h, 1d)
+- Technical indicator calculations
+
+### 📰 **News Sentiment Analysis**
+- Automated news collection from multiple sources
+- AI-powered sentiment analysis
+- Market impact correlation
+- Trending keyword extraction
+
+### 🤖 **AI Trading Recommendations**
+- Integration with Ollama for local AI processing
+- Context-aware trading signals
+- Risk assessment and position sizing
+- Entry/exit point recommendations
+
+### 🎯 **Multiple User Interfaces**
+- **Web Interface**: Modern, responsive dashboard
+- **Terminal UI (TUI)**: Rich interactive console interface
+- **Command Line**: Direct terminal commands
+- **API Endpoints**: RESTful API for integrations
+
+## 🏗️ Repository Structure
 
 ```
 gold-digger/
-├── 🎨 MODERN TUI INTERFACE (NEW!)
-│   ├── gold_digger_tui.py           # Beautiful modern TUI application
-│   ├── gold_digger_tui.tcss         # TUI styles and themes
-│   └── gold_digger_tui_launcher.py  # TUI launcher with dependency check
-│
-├── 📟 UNIFIED TERMINAL
-│   ├── gold_digger_terminal.py      # Classic terminal application
-│   ├── gold_digger.py               # Simple launcher script
-│   └── gold_digger.sh               # Shell wrapper for easy execution
-│
-├── 📊 CORE SYSTEM
-│   ├── gold_fetcher.py              # Price data fetching & caching
-│   ├── trading_analyzer.py          # AI-powered trading analysis
-│   ├── config.py                    # Configuration management
-│   └── run_complete_analysis.py     # Comprehensive analysis runner
-│
-├── 📰 NEWS SYSTEM
-│   ├── news_fetcher.py              # News fetching & caching
-│   ├── news_analyzer.py             # Sentiment & market analysis
-│   ├── news_viewer.py               # Interactive news browser
-│   └── export_news_html.py          # HTML report generation
-│
-├── ⚙️ CONFIGURATION
-│   ├── configure.py                 # Setup & management utility
-│   ├── .env                         # Your configuration file
-│   ├── .env.example                 # Configuration template
-│   └── trading_prompt.txt           # AI analysis prompt template
-│
-├── 📋 UTILITIES
-│   ├── query_example.py             # Data analysis examples
-│   ├── requirements.txt             # Python dependencies
-│   └── README.md                    # This documentation
-│
-└── 💾 DATA (auto-generated)
-    ├── gold_prices.db               # SQLite database
-    ├── exports/                     # CSV exports directory
-    ├── *.csv                        # Individual data exports
-    ├── *.html                       # HTML reports
-    └── *.log                        # Log files
+├── 📁 src/                     # Source code
+│   ├── 📁 core/               # Core business logic
+│   │   ├── gold_fetcher.py    # Gold price data fetching
+│   │   ├── news_fetcher.py    # News data collection
+│   │   ├── news_analyzer.py   # Sentiment analysis
+│   │   └── trading_analyzer.py # Trading signal generation
+│   ├── 📁 ui/                 # User interfaces
+│   │   ├── terminal.py        # Command-line interface
+│   │   ├── tui.py            # Text-based UI (Textual)
+│   │   ├── tui.tcss          # TUI styling
+│   │   ├── tui_launcher.py   # TUI launcher
+│   │   └── news_viewer.py    # News viewing components
+│   └── 📁 utils/              # Utility modules
+│       ├── export_news_html.py # HTML export utilities
+│       ├── query_example.py   # Database query examples
+│       └── init_web_data.py   # Web data initialization
+├── 📁 web/                     # Web interface
+│   ├── 📁 templates/          # HTML templates
+│   ├── 📁 static/             # CSS, JS, images
+│   └── app.py                # Flask web application
+├── 📁 config/                  # Configuration files
+│   ├── config.py             # Main configuration
+│   ├── configure.py          # Configuration utility
+│   └── trading_prompt.txt    # AI trading prompt
+├── 📁 scripts/                 # Executable scripts
+│   ├── gold_digger.py        # Main CLI script
+│   ├── gold_digger.sh        # Shell launcher
+│   ├── gold_digger_web.py    # Web launcher
+│   ├── gold_digger_web.sh    # Web shell launcher
+│   └── run_complete_analysis.py # Analysis runner
+├── 📁 data/                    # Data storage
+│   ├── 📁 exports/           # Export outputs
+│   ├── gold_prices.db        # SQLite database
+│   ├── *.csv                 # Historical data files
+│   └── *.html               # Generated reports
+├── 📁 tests/                   # Test suite
+├── 📁 docs/                    # Documentation
+├── 📁 logs/                    # Application logs
+├── main.py                    # Main entry point
+├── requirements.txt           # Python dependencies
+└── README.md                 # This file
 ```
 
-## API Data Sources
+## 🚀 Quick Start
 
-### Price Data
-- **Yahoo Finance** (`yfinance` library)
-- **Symbol**: GC=F (Gold Futures)
-- **Intervals**: 15m, 30m (configurable)
-- **Rate Limiting**: Built-in delays and retry logic
+### 1. Installation
 
-### News Data
-- **Yahoo Finance News API**
-- **Symbols**: GC=F, GOLD, GLD, IAU (configurable)
-- **Processing**: Sentiment analysis, categorization, keyword extraction
-- **Deduplication**: Content-based hashing prevents duplicates
-
-## Troubleshooting
-
-### Setup Issues
 ```bash
-# Run configuration wizard
-python3 configure.py
-
-# Test current setup
-python3 configure.py --test
-
-# Check configuration
-python3 gold_fetcher.py --config-summary
-```
-
-### Ollama Issues
-```bash
-# Check if Ollama is running
-curl http://localhost:11434/api/tags
-
-# Start Ollama
-ollama serve
-
-# Install model
-ollama pull gpt-oss:20b
-
-# Test with different model
-# Edit OLLAMA_MODEL in .env file
-```
-
-### Database Issues
-```bash
-# Check if tables exist
-python3 -c "
-import sqlite3
-conn = sqlite3.connect('gold_prices.db')
-cursor = conn.cursor()
-cursor.execute('SELECT name FROM sqlite_master WHERE type=\"table\"')
-print('Tables:', cursor.fetchall())
-"
-
-# Reinitialize database
-rm gold_prices.db
-python3 gold_fetcher.py
-python3 news_fetcher.py --fetch
-```
-
-### Data Issues
-```bash
-# Test with mock data
-# Set USE_MOCK_DATA=true in .env
-# Set USE_MOCK_NEWS=true in .env
-
-# Check API connectivity
-python3 -c "import yfinance as yf; print(yf.Ticker('GC=F').info['regularMarketPrice'])"
-
-# Verify news data
-python3 -c "import yfinance as yf; print(len(yf.Ticker('GC=F').news))"
-```
-
-### Performance Issues
-```bash
-# Increase API delays in .env
-API_DELAY=2.0
-
-# Reduce data fetch amounts
-DEFAULT_FETCH_DAYS=7
-MAX_ARTICLES_PER_SYMBOL=20
-
-# Enable debug mode
-DEBUG_MODE=true
-```
-
-## Remote/Cloud Deployment
-
-### Docker Configuration
-```bash
-# Use remote Ollama instance
-OLLAMA_HOST=http://ollama-server:11434
-
-# Cloud database path
-DATABASE_PATH=/data/gold_prices.db
-
-# Log to files for monitoring
-ENABLE_FILE_LOGGING=true
-LOG_FILE=/logs/gold_digger.log
-```
-
-### Environment Examples
-```bash
-# Development
-OLLAMA_HOST=http://localhost:11434
-DEBUG_MODE=true
-USE_MOCK_DATA=false
-
-# Production
-OLLAMA_HOST=http://production-ollama:11434
-DEBUG_MODE=false
-LOG_LEVEL=WARNING
-ENABLE_FILE_LOGGING=true
-```
-
-## Security & Best Practices
-
-### Data Protection
-- Database contains market data only (no personal information)
-- API keys not required for Yahoo Finance
-- Local Ollama instance recommended for privacy
-- Regular backups of `.env` and database recommended
-
-### Performance Optimization
-- Configure appropriate `API_DELAY` to avoid rate limits
-- Use `MAX_RETRIES` for reliable data fetching
-- Enable `ENABLE_FILE_LOGGING` for production monitoring
-- Consider `USE_MOCK_DATA` for development/testing
-
-## Contributing
-
-### Development Setup
-```bash
-# Clone repository
+# Clone the repository
 git clone <repository-url>
 cd gold-digger
 
-# Setup development environment
-python3 configure.py
-python3 configure.py --test
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Enable debug mode
-echo "DEBUG_MODE=true" >> .env
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-### Adding Features
-- Follow existing code patterns
-- Add configuration options to `.env.example`
-- Update this README with new commands
-- Test with both real and mock data
+### 2. Configuration
 
-## Disclaimer
+```bash
+# Configure the application
+python main.py config
 
-⚠️ **Important**: This system is for educational and research purposes only. 
+# Or manually create .env file
+cp .env.example .env
+# Edit .env with your preferences
+```
 
-- **Not Financial Advice**: AI recommendations are algorithmic analysis, not professional financial advice
-- **Market Risk**: All trading involves risk of loss
-- **Data Accuracy**: Market data accuracy depends on external APIs
-- **Personal Responsibility**: Always do your own research and consult financial professionals
-- **Testing Recommended**: Use paper trading to validate strategies
+### 3. Launch Application
 
-## License
+#### 🌐 Web Interface (Recommended)
+```bash
+python main.py web
+# Visit http://localhost:5000
+```
 
-This project is for educational use. Users are responsible for compliance with financial data provider terms of service and applicable trading regulations.
+#### 📱 Interactive TUI
+```bash
+python main.py tui
+```
+
+#### 🖥️ Terminal Interface
+```bash
+python main.py terminal
+```
+
+#### 📊 Fetch Data & Analyze
+```bash
+# Fetch latest data
+python main.py fetch --days 14
+
+# Run complete analysis
+python main.py analyze
+```
+
+## 📋 Requirements
+
+### System Requirements
+- Python 3.8 or higher
+- 2GB+ RAM
+- Internet connection for data fetching
+
+### Dependencies
+- **Core**: `pandas`, `sqlite3`, `requests`, `yfinance`
+- **AI**: `ollama` (for local AI processing)
+- **Web**: `flask`, `flask-cors`, `plotly`
+- **TUI**: `textual`, `rich`
+- **Analysis**: `scikit-learn`, `numpy`
+
+### Optional: Ollama Setup
+For AI-powered recommendations:
+```bash
+# Install Ollama
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Pull recommended model
+ollama pull gpt-oss:20b
+# or smaller model: ollama pull phi3.5
+```
+
+## 🎯 Usage Examples
+
+### Web Interface Features
+- **Dashboard**: Real-time price charts and market overview
+- **Sentiment Analysis**: News sentiment tracking with visual indicators
+- **AI Recommendations**: Context-aware trading signals
+- **Historical Data**: Interactive charts and data analysis
+
+### API Endpoints
+```bash
+# Get current gold price
+curl http://localhost:5000/api/current-price
+
+# Get sentiment analysis
+curl http://localhost:5000/api/news/analyze
+
+# Get trading recommendation
+curl http://localhost:5000/api/complete-analysis
+```
+
+### Command Line Usage
+```bash
+# Fetch and analyze gold data
+python scripts/gold_digger.py --fetch --analyze
+
+# Export data to CSV
+python src/utils/export_news_html.py --format csv
+
+# Run custom queries
+python src/utils/query_example.py --interval 15m
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+Key configuration options (see `config/config.py` for full list):
+
+```env
+# Database
+DATABASE_PATH=data/gold_prices.db
+
+# Ollama AI
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MODEL=gpt-oss:20b
+
+# Data Fetching
+DEFAULT_FETCH_DAYS=14
+GOLD_SYMBOL=GC=F
+
+# Web Interface
+PORT=5000
+FLASK_ENV=development
+```
+
+### Trading Parameters
+Customize trading analysis in `config/trading_prompt.txt`:
+- Risk tolerance levels
+- Position sizing rules
+- Technical indicator preferences
+- Market condition filters
+
+## 📊 Data Sources
+
+- **Gold Prices**: Yahoo Finance (GC=F futures)
+- **News Data**: Multiple financial news sources
+- **Market Data**: Real-time and historical OHLCV data
+- **Economic Indicators**: Integration-ready structure
+
+## 🧠 AI Integration
+
+Gold Digger uses local AI processing via Ollama:
+- **Privacy-First**: All AI processing runs locally
+- **Customizable**: Use any Ollama-compatible model
+- **Context-Aware**: AI considers market conditions, news, and technical data
+- **Real-Time**: Generate fresh recommendations on demand
+
+## 🔐 Security & Privacy
+
+- **Local Processing**: No data sent to external AI services
+- **Secure Database**: SQLite with proper permissions
+- **API Security**: Built-in rate limiting and validation
+- **Configuration**: Secure environment variable handling
+
+## 📈 Performance
+
+- **Efficient Caching**: Smart database caching reduces API calls
+- **Async Processing**: Non-blocking data fetching
+- **Memory Optimized**: Handles large datasets efficiently
+- **Scalable**: Modular design supports easy extensions
+
+## 🧪 Testing
+
+```bash
+# Run test suite
+python -m pytest tests/
+
+# Run specific tests
+python tests/test_tui.py
+python tests/test_layout.py
+
+# Test web interface
+python -m unittest web.test_app
+```
+
+## 📚 Documentation
+
+Detailed documentation available in `/docs/`:
+- `TERMINAL_GUIDE.md` - Command-line usage
+- `TUI_GUIDE.md` - Text UI instructions
+- `WEB_GUIDE.md` - Web interface guide
+- `API_REFERENCE.md` - API documentation
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+### Development Setup
+```bash
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run pre-commit hooks
+pre-commit install
+
+# Run linting
+flake8 src/
+black src/
+
+# Run type checking
+mypy src/
+```
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support & Troubleshooting
+
+### Common Issues
+
+**Port 5000 in use (macOS)**
+```bash
+# Disable AirPlay Receiver in System Preferences
+# Or use different port:
+python main.py web --port 8080
+```
+
+**Ollama connection issues**
+```bash
+# Check Ollama status
+ollama list
+ollama serve
+
+# Test connection
+curl http://localhost:11434/api/tags
+```
+
+**Database errors**
+```bash
+# Reset database
+rm data/gold_prices.db
+python main.py fetch --days 7
+```
+
+### Getting Help
+
+- 📧 Email: support@golddigger.dev
+- 💬 Discord: [Gold Digger Community](https://discord.gg/golddigger)
+- 🐛 Issues: [GitHub Issues](https://github.com/golddigger/issues)
+- 📖 Wiki: [Documentation Wiki](https://github.com/golddigger/wiki)
+
+## 🏆 Acknowledgments
+
+- Yahoo Finance for reliable market data
+- Ollama team for local AI infrastructure
+- Textual framework for beautiful TUI components
+- Flask ecosystem for robust web framework
+- Open source community for inspiration and libraries
 
 ---
 
-🏆 **Gold Digger System** - Comprehensive AI-Powered Gold Market Analysis  
-📊 Price Data • 📰 News Intelligence • 🤖 AI Trading Analysis • ⚙️ Complete Automation
+<div align="center">
+
+**Built with ❤️ for traders who demand better tools**
+
+[🌟 Star this repo](https://github.com/golddigger/stargazers) • [🐛 Report Bug](https://github.com/golddigger/issues) • [💡 Request Feature](https://github.com/golddigger/issues)
+
+</div>

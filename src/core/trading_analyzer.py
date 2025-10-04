@@ -33,7 +33,7 @@ class TradingAnalyzer:
         # Initialize news analyzer if requested
         if self.include_news:
             try:
-                from news_analyzer import GoldNewsAnalyzer
+                from .news_analyzer import GoldNewsAnalyzer
                 self.news_analyzer = GoldNewsAnalyzer(self.db_path)
             except ImportError as e:
                 logger.warning(f"News analysis not available: {e}")

@@ -96,9 +96,9 @@ install_deps() {
 
 # Function to check database and data
 check_data() {
-    if [ ! -f "gold_prices.db" ]; then
+    if [ ! -f "data/gold_prices.db" ]; then
         print_color $YELLOW "🔄 No database found. Fetching initial data..."
-        $PYTHON_CMD gold_fetcher.py --quick
+        $PYTHON_CMD main.py fetch --days 7
     fi
     print_color $GREEN "✅ Data files ready"
 }
@@ -112,7 +112,7 @@ show_usage() {
     echo "  --host HOST        Set host address (default: localhost)"
     echo "  --debug            Run in debug mode"
     echo "  --production       Run in production mode with Gunicorn"
-    echo "  --no-browser       Don't open browser automatically"
+    echo "  --open-browser     Open browser automatically"
     echo "  --setup-only       Setup environment and exit"
     echo "  --help             Show this help message"
     echo
@@ -120,6 +120,7 @@ show_usage() {
     echo "  $0                 # Start with default settings"
     echo "  $0 --port 8080     # Start on port 8080"
     echo "  $0 --debug         # Start in debug mode"
+    echo "  $0 --open-browser  # Start and open browser"
     echo "  $0 --production    # Start in production mode"
 }
 
@@ -149,7 +150,7 @@ PORT=5000
 HOST="localhost"
 DEBUG=false
 PRODUCTION=false
-NO_BROWSER=false
+NO_BROWSER=true
 SETUP_ONLY=false
 
 # Parse command line arguments
@@ -171,8 +172,8 @@ while [[ $# -gt 0 ]]; do
             PRODUCTION=true
             shift
             ;;
-        --no-browser)
-            NO_BROWSER=true
+        --open-browser)
+            NO_BROWSER=false
             shift
             ;;
         --setup-only)
@@ -196,7 +197,7 @@ main() {
     print_header
 
     # Check if we're in the right directory
-    if [ ! -f "gold_digger_web.py" ]; then
+    if [ ! -f "main.py" ] || [ ! -d "web" ]; then
         print_color $RED "❌ Please run this script from the gold-digger directory"
         exit 1
     fi
@@ -215,13 +216,18 @@ main() {
     # Prepare launch command
     if [ "$PRODUCTION" = true ]; then
         print_color $BLUE "🚀 Starting Gold Digger Web App in PRODUCTION mode..."
-        LAUNCH_CMD="$PYTHON_CMD gold_digger_web.py --production --port $PORT --host $HOST"
+        LAUNCH_CMD="$PYTHON_CMD main.py web --port $PORT"
+        export FLASK_ENV=production
+        export HOST=$HOST
     elif [ "$DEBUG" = true ]; then
         print_color $BLUE "🚀 Starting Gold Digger Web App in DEBUG mode..."
-        LAUNCH_CMD="$PYTHON_CMD gold_digger_web.py --debug --port $PORT --host $HOST"
+        LAUNCH_CMD="$PYTHON_CMD main.py web --port $PORT"
+        export FLASK_ENV=development
+        export HOST=$HOST
     else
         print_color $BLUE "🚀 Starting Gold Digger Web App in DEVELOPMENT mode..."
-        LAUNCH_CMD="$PYTHON_CMD gold_digger_web.py --port $PORT --host $HOST"
+        LAUNCH_CMD="$PYTHON_CMD main.py web --port $PORT"
+        export HOST=$HOST
     fi
 
     print_color $GREEN "🌐 Dashboard will be available at: http://$HOST:$PORT"

@@ -15,6 +15,8 @@ import socket
 # Add parent directory to path for imports
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
+sys.path.append(os.path.join(parent_dir, 'src'))
+sys.path.append(os.path.join(parent_dir, 'config'))
 
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
@@ -22,10 +24,10 @@ import plotly.graph_objs as go
 import plotly.utils
 
 # Import our existing modules
-from gold_fetcher import GoldPriceFetcher
-from news_fetcher import GoldNewsFetcher
-from news_analyzer import GoldNewsAnalyzer
-from trading_analyzer import TradingAnalyzer
+from src.core.gold_fetcher import GoldPriceFetcher
+from src.core.news_fetcher import GoldNewsFetcher
+from src.core.news_analyzer import GoldNewsAnalyzer
+from src.core.trading_analyzer import TradingAnalyzer
 from config import get_config
 
 # Configure logging
@@ -39,8 +41,8 @@ CORS(app)
 # Get configuration
 config = get_config()
 
-# Set database path to parent directory to use the main database
-db_path = os.path.join(parent_dir, 'gold_prices.db')
+# Set database path to data directory to use the main database
+db_path = os.path.join(parent_dir, 'data', 'gold_prices.db')
 
 # Initialize components with correct database path
 gold_fetcher = GoldPriceFetcher(db_path=db_path)
@@ -268,6 +270,38 @@ def fetch_fresh_news():
 
     except Exception as e:
         logger.error(f"Error fetching fresh news: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/prices/fetch')
+def fetch_fresh_prices():
+    """Fetch fresh price data from external sources."""
+    try:
+        logger.info("Fetching fresh price data...")
+        # Fetch new price data for both intervals
+        gold_fetcher.fetch_and_cache_gold_prices(days=7)
+
+        return jsonify({
+            'message': 'Price data fetched successfully',
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error fetching fresh price data: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/prices/chart/<interval>/fresh')
+def get_fresh_price_chart(interval):
+    """Get fresh price chart data after fetching latest prices."""
+    try:
+        # First fetch fresh data
+        logger.info(f"Fetching fresh price data for chart ({interval})...")
+        gold_fetcher.fetch_and_cache_gold_prices(days=7)
+
+        # Then return the chart with fresh data
+        return get_price_chart(interval)
+    except Exception as e:
+        logger.error(f"Error fetching fresh price chart: {e}")
         return jsonify({'error': str(e)}), 500
 
 
